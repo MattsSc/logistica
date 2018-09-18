@@ -5,7 +5,7 @@ const swaggerTools = require('swagger-tools');
 const jsyaml = require('js-yaml');
 const dbUtils = require('./utils/dbUtils.js');
 
-const port= 8080;
+let port = process.env.PORT || 3000;
 const basePath = '/logistica';
 
 const fs = require('fs'),
