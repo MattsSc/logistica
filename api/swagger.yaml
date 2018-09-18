@@ -1,0 +1,290 @@
+---
+swagger: "2.0"
+info:
+  description: Logistica, Grupo 7
+  version: 1.0.0
+  title: Logistic S.A.
+  contact:
+    email: matias.scan@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: localhost:8080
+basePath: /logistica
+tags:
+- name: Order
+  description: Operaciones permitidas para ordenes
+- name: Delivery
+  description: Opercaiones permitidas para las hojas de ruta
+schemes:
+- https
+paths:
+  /order/{orderId}:
+    get:
+      tags:
+      - Order
+      summary: Buscar orden
+      description: |
+        Devuelve una orden dado la orden Id recibida
+      operationId: searchOrder
+      produces:
+      - application/json
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: Devuelve la orden pedida
+          schema:
+            $ref: '#/definitions/OrderLogistica'
+        400:
+          description: Mal formato del id de orden
+        404:
+          description: Orden no encontrada
+    patch:
+      tags:
+      - Order
+      summary: Actualiza una orden
+      description: |
+        Actualiza el estado de una orden, en caso de que ese estado sea ON WAY o DELIVERED se le manda un mail al cliente, salvo que este pedido sea marcado como que recibio una queja. De ser asi no se manda mail y cuando este en estado DELIVERED se le notifica a reclamos que el pedido llego ( a definir servicio de reclamos).
+      operationId: updateOrderStatus
+      produces:
+      - application/json
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        type: string
+      - name: status
+        in: query
+        description: El estado que se quiere setear esto se agrega agregando ?status=DELIVERED a la URL
+        required: true
+        type: string
+      responses:
+        200:
+          description: Orden actualizada
+        400:
+          description: Algun parametro es invalido
+        404:
+          description: La orden no existe
+  /order/{orderId}/complain:
+    patch:
+      tags:
+      - Order
+      summary: Informa queja en una orden
+      description: |
+        Setea que una orden recibio una queja
+      operationId: complainOrder
+      produces:
+      - application/json
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: Se ingreso la queja correctamente
+        400:
+          description: el formato del id es incorrecto
+        404:
+          description: Orden no encontrada
+  /order/delivered:
+    get:
+      tags:
+      - Order
+      summary: Devolver las ordenes en ese estado
+      description: |
+        Devuelve las ordenes que esten en el estado entregadas (DELIVERED).
+        Esto se ejecuta todos los dias a las 22:00hs y genera una lista con las ordenes que estan en estado entregadas(DELIVERED), ni bien lo hace las pasa a estado COMPLETED(asi se diferencia cuales ya fueron informadas y cuales no). Si hay ordenes en estado ON WAY se asume que estas fueron entregadas asique se les modifica el estado para informar ( y si es necesario se manda mail o se informa a reclamos).
+      operationId: getOrderByStatus
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        200:
+          description: Devuelve la orden pedida
+          schema:
+            $ref: '#/definitions/Delivered'
+        400:
+          description: Mal formato del id de orden
+        404:
+          description: Orden no encontrada
+  /delivery:
+    post:
+      tags:
+      - Delivery
+      summary: crea las hojas de rutas
+      description: "Crea las hojas de rutas para el dia de la fecha. Se ejecuta todos\
+        \ los dias a las 8:30AM. El input es un archivo json que lo depositan en el\
+        \ FTP (definir url) con el nombre (a definir). El body del archivo es a definir,\
+        \ cuando lo tenga lo subo como si fuera el body asi ya sabemos. \n\nSe asignan\
+        \ las ordenes ingresadas mas las que quedaron pendientes a los moviles(fleteros).\
+        \ Se asume que cada movil tiene un peso posible a llevar asique se asignan\
+        \ ordenes hasta cumplir dicho peso. Si sobran pedidos se los asigna al dia\
+        \ siguiente.\n\nLa respuesta es en el formato definido pero va dentro de un\
+        \ archivo JSON que lo depositamos en el mismo FTP con el nombre rutas-YYYY-MM-dd.json\n"
+      operationId: createDeliveryList
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Route'
+        404:
+          description: today orders not found
+definitions:
+  Delivered:
+    type: object
+    properties:
+      orders:
+        type: array
+        items:
+          type: string
+          example: aaa111
+    example:
+      orders:
+      - aaa111
+      - aaa111
+  Producto:
+    type: object
+    required:
+    - peso
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: aaa111
+      cantidad:
+        type: integer
+        example: 2
+      descripcion:
+        type: string
+        example: heladera
+      peso:
+        type: integer
+        example: 5
+  Cliente:
+    type: object
+    required:
+    - domicilio
+    - email
+    - nombre
+    properties:
+      nombre:
+        type: string
+        example: 4444-4444
+      domicilio:
+        type: string
+        example: Calle false 123
+      email:
+        type: string
+        format: email
+        example: aaaa@aaaa.com
+  OrderLogistica:
+    type: object
+    required:
+    - checkInDate
+    - deliveryDate
+    - id
+    - status
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: aaa111
+      checkInDate:
+        type: string
+        format: date-time
+        example: 2016-08-29T09:12:33.01Z
+      status:
+        type: string
+        format: string
+        example: NEW | RECEIVED | ON WAY | DELIVERED
+      deliveryDate:
+        type: string
+        format: date-time
+        example: 2016-08-29T09:12:33.01Z
+    example:
+      id: aaa111
+      deliveryDate: 2016-08-29T09:12:33.01Z
+      checkInDate: 2016-08-29T09:12:33.01Z
+      status: NEW | RECEIVED | ON WAY | DELIVERED
+  Route:
+    type: object
+    required:
+    - date
+    - id
+    - movil
+    - pedidos
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: aaa111
+      date:
+        type: string
+        format: date-time
+        example: 2016-08-29T09:12:33.01Z
+      movil:
+        $ref: '#/definitions/Movil'
+      pedidos:
+        type: array
+        items:
+          $ref: '#/definitions/Pedido'
+    example:
+      date: 2016-08-29T09:12:33.01Z
+      movil:
+        nombre: Mario Perez
+        patente: aqs123
+      id: aaa111
+      pedidos:
+      - cliente: Maria Gonzalez
+        direccion: Calle falsa 123
+        dni: "111111111"
+      - cliente: Maria Gonzalez
+        direccion: Calle falsa 123
+        dni: "111111111"
+  Movil:
+    type: object
+    required:
+    - nombre
+    - patente
+    properties:
+      nombre:
+        type: string
+        example: Mario Perez
+      patente:
+        type: string
+        format: uuid
+        example: aqs123
+    example:
+      nombre: Mario Perez
+      patente: aqs123
+  Pedido:
+    type: object
+    required:
+    - cliente
+    - direccion
+    - dni
+    properties:
+      dni:
+        type: string
+        format: uuid
+        example: "111111111"
+      direccion:
+        type: string
+        example: Calle falsa 123
+      cliente:
+        type: string
+        example: Maria Gonzalez
+    example:
+      cliente: Maria Gonzalez
+      direccion: Calle falsa 123
+      dni: "111111111"

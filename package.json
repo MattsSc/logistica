@@ -1,0 +1,19 @@
+{
+  "name": "logisticav2",
+  "version": "1.0.0",
+  "description": "using expressJs",
+  "main": "index.js",
+  "scripts": {
+    "prestart": "npm install",
+    "start": "node index.js"
+  },
+  "author": "Matias Scandroglio <matias.scandroglio@almundo.com>",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "mongodb": "^3.1.6",
+    "swagger-tools": "0.10.1",
+    "js-yaml": "^3.3.0"
+  }
+}
