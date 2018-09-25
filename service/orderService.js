@@ -22,8 +22,8 @@ exports.informComplain = (orderId) =>{
     });
 };
 
-exports.update = (orderId, body) =>{
-    dbUtils.patchOrder(orderId, body).then(doc =>{
+exports.update = (orderId, estado) =>{
+    dbUtils.patchOrder(orderId, {estado: estado}).then(doc =>{
         //Logica de mandar mail
         return doc;
     }).catch(err =>{

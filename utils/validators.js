@@ -4,6 +4,6 @@ exports.validateIsNumber = (value) => {
     return /^\d+$/.test(value);
 };
 
-exports.validateBodyForUpdate =(body) => {
-    return body.estado && estados.indexOf(body.estado) > -1
+exports.validateBodyForUpdate = (estado) => {
+    return estados.indexOf(estado) > -1
 };

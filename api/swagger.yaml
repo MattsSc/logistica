@@ -48,7 +48,7 @@ paths:
       - Order
       summary: Actualiza una orden
       description: |
-        Actualiza el estado de una orden, en caso de que ese estado sea ON WAY o DELIVERED se le manda un mail al cliente, salvo que este pedido sea marcado como que recibio una queja. De ser asi no se manda mail y cuando este en estado DELIVERED se le notifica a reclamos que el pedido llego ( a definir servicio de reclamos).
+        Actualiza el estado de una orden, en caso de que ese estado sea ON_WAY o DELIVERED se le manda un mail al cliente, salvo que este pedido sea marcado como que recibio una queja. De ser asi no se manda mail y cuando este en estado DELIVERED se le notifica a reclamos que el pedido llego ( a definir servicio de reclamos).
       operationId: updateOrderStatus
       produces:
       - application/json
@@ -57,9 +57,9 @@ paths:
         in: path
         required: true
         type: string
-      - name: status
+      - name: estado
         in: query
-        description: El estado que se quiere setear esto se agrega agregando ?status=DELIVERED a la URL
+        description: El estado que se quiere setear. Solo puede ser "NEW", "RECEIVED", "ON_WAY", "DELIVERED", "COMPLETED".
         required: true
         type: string
       responses:
