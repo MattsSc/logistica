@@ -1,6 +1,4 @@
 const dbUtils = require('../utils/dbUtils.js');
-const global = require('../utils/globalUtils.js');
-
 function createMovil(movil) {
     return {
         patente: movil.patente,
@@ -19,12 +17,12 @@ function crearOrden(ord) {
 exports.createDeliveryOrders = () => {
     dbUtils.getByStatus("NEW").then(orders =>{
         if(!orders)
-            throw new Error(global.notFondErrorMessage);
+            throw new Error("aa");
         else{
             const newOrders = orders;
             dbUtils.getAllMoviles().then(docs => {
                 if(!docs)
-                    throw new Error(global.notFondErrorMessage);
+                    throw new Error("aa");
                 else{
                     const moviles = docs;
                     let result = [];
@@ -64,7 +62,7 @@ exports.createDeliveryOrders = () => {
 exports.getDeliveredOrders = () =>{
     dbUtils.getByStatus("DELIVERED").then(res => {
         if(!res)
-            throw new Error(global.notFondErrorMessage);
+            throw new Error("aa");
         else
         {
             let orders ={};

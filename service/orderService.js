@@ -1,19 +1,24 @@
 const dbUtils = require('../utils/dbUtils.js');
 
+function setGetOrderResponse(doc) {
+    return {
+        id: doc.orden_id,
+        estado: doc.estado === 'COMPLETED' ? 'DELIVERED' : doc.estado,
+        fecha_entregado : doc.fecha_entregado,
+        fecha_recibido: doc.fecha_recibido
+    };
+}
+
 exports.findOrder = (orderId) => {
      return dbUtils.findOrder(orderId).then(doc => {
-         if(!doc) throw new Error("not found");
-         return doc;
-    }).catch(err => {
-        throw new Error(err);
+         if(!doc) throw new Error("Not Found!");
+         return setGetOrderResponse(doc);
     });
 };
 
 exports.informComplain = (orderId) =>{
-    dbUtils.patchOrder(orderId,{complain: true}).then(doc => {
+    dbUtils.patchOrder(orderId,{queja: true}).then(doc => {
         return doc;
-    }).catch(err =>{
-        throw new Error(err);
     });
 };
 

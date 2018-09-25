@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-host: localhost:8080
+host: logistica-uade-app.herokuapp.com
 basePath: /logistica
 tags:
 - name: Order
@@ -89,8 +89,8 @@ paths:
           description: Se ingreso la queja correctamente
         400:
           description: el formato del id es incorrecto
-        404:
-          description: Orden no encontrada
+        500:
+          description: Hubo algun error
   /order/delivered:
     get:
       tags:
@@ -190,32 +190,31 @@ definitions:
   OrderLogistica:
     type: object
     required:
-    - checkInDate
-    - deliveryDate
+    - fecha_recibido
     - id
-    - status
+    - estado
     properties:
       id:
         type: string
         format: uuid
         example: aaa111
-      checkInDate:
+      fecha_recibido:
         type: string
         format: date-time
         example: 2016-08-29T09:12:33.01Z
-      status:
+      estado:
         type: string
         format: string
         example: NEW | RECEIVED | ON WAY | DELIVERED
-      deliveryDate:
+      fecha_entregado:
         type: string
         format: date-time
         example: 2016-08-29T09:12:33.01Z
     example:
       id: aaa111
-      deliveryDate: 2016-08-29T09:12:33.01Z
-      checkInDate: 2016-08-29T09:12:33.01Z
-      status: NEW | RECEIVED | ON WAY | DELIVERED
+      fecha_recibido: 2016-08-29T09:12:33.01Z
+      fecha_entregado: 2016-08-29T09:12:33.01Z
+      estado: NEW | RECEIVED | ON WAY | DELIVERED
   Route:
     type: object
     required:

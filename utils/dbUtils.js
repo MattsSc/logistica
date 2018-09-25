@@ -21,7 +21,7 @@ exports.connectDb = function(){
 //ORDERS
 exports.findOrder = function(id) {
     const dbCollection = db.collection(ordersCollection);
-    return dbCollection.findOne({"orderId": parseInt(id)});
+    return dbCollection.findOne({"orden_id": parseInt(id)});
 };
 
 exports.getByStatus = function(status) {
@@ -31,7 +31,7 @@ exports.getByStatus = function(status) {
 
 exports.patchOrder = function(id, query) {
     const dbCollection = db.collection(ordersCollection);
-    return dbCollection.findOneAndUpdate({"orderId": parseInt(id)}, {$set: query});
+    return dbCollection.findOneAndUpdate({"orden_id": parseInt(id)}, {$set: query});
 };
 
 //MOVILES
