@@ -1,4 +1,5 @@
 const dbUtils = require('../utils/dbUtils.js');
+const email = require('../utils/emailUtils.js');
 
 function setGetOrderResponse(doc) {
     return {
@@ -22,11 +23,27 @@ exports.informComplain = (orderId) =>{
     });
 };
 
-exports.update = (orderId, estado) =>{
-    return dbUtils.patchOrder(orderId, {estado: estado}).then(doc =>{
-        //Logica de mandar mail
-        return doc;
-    });
+exports.updateStatus = async (orderId, estado) =>{
+    try{
+        const order = await dbUtils.findOrder(orderId);
+        if(order.estado !== estado){
+            return dbUtils.patchOrder(orderId, {estado: estado}).then(doc =>{
+                if(estado === 'ON_WAY' || estado === 'DELIVERED')
+                    email.transporter.sendMail(email.createEmail(order.cliente.email, estado), function(error, info) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
+                    });
+
+                return doc;
+            });
+        }
+    }catch (e) {
+        throw new  Error(e);
+    }
+
 };
 
 exports.getOrdersByStatus = (estado) => {

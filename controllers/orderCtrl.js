@@ -36,10 +36,10 @@ router.patch('/:orderId/complain', async function (req,res) {
 
 router.patch('/:orderId', async function (req, res) {
     const orderId = req.params.orderId;
-    console.log("Se actualiza al estado " + req.query.estado + " a orden " + orderId);
+    console.log("Se actualiza al estado " + req.query.estado + " la orden " + orderId);
     if(validator.validateIsNumber(orderId) && validator.validateBodyForUpdate(req.query.estado)) {
         try{
-            const result = await service.update(req.params.orderId, req.query.estado);
+            const result = await service.updateStatus(req.params.orderId, req.query.estado);
             res.sendStatus(200);
         }catch (e) {
             res.sendStatus(500);
