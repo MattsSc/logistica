@@ -39,13 +39,28 @@ router.patch('/:orderId', async function (req, res) {
     console.log("Se actualiza al estado " + req.query.estado + " a orden " + orderId);
     if(validator.validateIsNumber(orderId) && validator.validateBodyForUpdate(req.query.estado)) {
         try{
-            const result = await service.update(req.params.orderId, req.body);
+            const result = await service.update(req.params.orderId, req.query.estado);
             res.sendStatus(200);
         }catch (e) {
             res.sendStatus(500);
         }
     }else{
         res.status(404).send("Orden id debe ser numerico / El estado no pertenece a los que estan indicados : \"NEW\", \"RECEIVED\", \"ON_WAY\", \"DELIVERED\", \"COMPLETED\"")
+    }
+});
+
+router.get('/', async function (req, res) {
+    try{
+        if(req.query.update){
+            console.log("ACA SE TIENE QUE ACTUALIZAR TODAS LAS ORDENES QUE ESTAN EN UN ESTADO QUE NO SE NEW O COMPLETED")
+        }
+        const estado = req.query.estado || 'DELIVERED';
+
+        console.log("Se estan buscando las ordenes que esten en " + estado);
+        let doc = await service.getOrdersByStatus({estado: estado});
+        res.send(doc);
+    }catch (e) {
+        res.sendStatus(404);
     }
 });
 module.exports = router;

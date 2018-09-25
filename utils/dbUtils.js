@@ -34,6 +34,11 @@ exports.patchOrder = function(id, query) {
     return dbCollection.findOneAndUpdate({"orden_id": parseInt(id)}, {$set: query});
 };
 
+exports.getAllOrders = function(query) {
+    const dbCollection = db.collection(ordersCollection);
+    return dbCollection.find(query).toArray();
+};
+
 //MOVILES
 exports.getAllMoviles = function() {
     const dbCollection = db.collection(movilesCollection);

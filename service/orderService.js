@@ -26,7 +26,13 @@ exports.update = (orderId, estado) =>{
     dbUtils.patchOrder(orderId, {estado: estado}).then(doc =>{
         //Logica de mandar mail
         return doc;
-    }).catch(err =>{
-        throw new Error(err);
+    });
+};
+
+exports.getOrdersByStatus = (query) => {
+    dbUtils.getAllOrders(query).then(docs =>{
+        let orders= [];
+        docs.forEach(doc =>{ orders.push(doc.orden_id) });
+        return {ordenes: orders};
     });
 };
