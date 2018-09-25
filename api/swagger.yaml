@@ -112,10 +112,8 @@ paths:
           description: Devuelve la orden pedida
           schema:
             $ref: '#/definitions/Delivered'
-        400:
-          description: Mal formato del id de orden
-        404:
-          description: Orden no encontrada
+        500:
+          description: Error en el servidor
   /delivery:
     post:
       tags:
@@ -147,13 +145,13 @@ definitions:
   Delivered:
     type: object
     properties:
-      orders:
+      ordenes:
         type: array
         items:
           type: string
           example: aaa111
     example:
-      orders:
+      ordenes:
       - aaa111
       - aaa111
   Producto:

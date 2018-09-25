@@ -51,16 +51,15 @@ router.patch('/:orderId', async function (req, res) {
 
 router.get('/', async function (req, res) {
     try{
-        if(req.query.update){
-            console.log("ACA SE TIENE QUE ACTUALIZAR TODAS LAS ORDENES QUE ESTAN EN UN ESTADO QUE NO SE NEW O COMPLETED")
-        }
         const estado = req.query.estado || 'DELIVERED';
 
         console.log("Se estan buscando las ordenes que esten en " + estado);
-        let doc = await service.getOrdersByStatus({estado: estado});
+
+        let doc = await service.getOrdersByStatus(estado);
         res.send(doc);
     }catch (e) {
         res.sendStatus(404);
     }
 });
+
 module.exports = router;

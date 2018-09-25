@@ -24,11 +24,6 @@ exports.findOrder = function(id) {
     return dbCollection.findOne({"orden_id": parseInt(id)});
 };
 
-exports.getByStatus = function(status) {
-    const dbCollection = db.collection(ordersCollection);
-    return dbCollection.findOne({estado: status}).toArray();
-};
-
 exports.patchOrder = function(id, query) {
     const dbCollection = db.collection(ordersCollection);
     return dbCollection.findOneAndUpdate({"orden_id": parseInt(id)}, {$set: query});

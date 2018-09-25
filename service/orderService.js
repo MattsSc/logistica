@@ -17,20 +17,20 @@ exports.findOrder = (orderId) => {
 };
 
 exports.informComplain = (orderId) =>{
-    dbUtils.patchOrder(orderId,{queja: true}).then(doc => {
+    return dbUtils.patchOrder(orderId,{queja: true}).then(doc => {
         return doc;
     });
 };
 
 exports.update = (orderId, estado) =>{
-    dbUtils.patchOrder(orderId, {estado: estado}).then(doc =>{
+    return dbUtils.patchOrder(orderId, {estado: estado}).then(doc =>{
         //Logica de mandar mail
         return doc;
     });
 };
 
-exports.getOrdersByStatus = (query) => {
-    dbUtils.getAllOrders(query).then(docs =>{
+exports.getOrdersByStatus = (estado) => {
+    return dbUtils.getAllOrders({estado: estado}).then(docs =>{
         let orders= [];
         docs.forEach(doc =>{ orders.push(doc.orden_id) });
         return {ordenes: orders};
