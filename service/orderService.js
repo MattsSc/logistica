@@ -26,7 +26,6 @@ exports.informComplain = (orderId) =>{
 exports.updateStatus = async (orderId, estado) =>{
     try{
         const order = await dbUtils.findOrder(orderId);
-        console.log(order);
         if(order.estado !== estado){
             return dbUtils.patchOrder(orderId, {estado: estado}).then(doc =>{
                 if((estado === 'ON_WAY' || estado === 'DELIVERED') && !order.queja){
