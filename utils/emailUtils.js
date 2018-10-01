@@ -1,11 +1,12 @@
 const nodemailer = require('nodemailer');
 
-const localEmail ='logis-uade@outlook.com.ar';
+const localEmail ='mscandroglio@uade.edu.ar';
 exports.transporter = nodemailer.createTransport({
-    service: 'hotmail',
+    host: 'mail.uade.edu.ar',
+    port: 25,
     auth: {
         user: localEmail,
-        pass: 'logistica123'
+        pass: 'Ausonia0205'
     }
 });
 

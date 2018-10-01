@@ -26,9 +26,11 @@ exports.informComplain = (orderId) =>{
 exports.updateStatus = async (orderId, estado) =>{
     try{
         const order = await dbUtils.findOrder(orderId);
+        console.log(order);
         if(order.estado !== estado){
             return dbUtils.patchOrder(orderId, {estado: estado}).then(doc =>{
-                if(estado === 'ON_WAY' || estado === 'DELIVERED')
+                if((estado === 'ON_WAY' || estado === 'DELIVERED') && !order.queja){
+                    console.log("Se notifica al cliente " + order.cliente.email);
                     email.transporter.sendMail(email.createEmail(order.cliente.email, estado), function(error, info) {
                         if (error) {
                             console.log(error);
@@ -36,6 +38,7 @@ exports.updateStatus = async (orderId, estado) =>{
                             console.log('Email sent: ' + info.response);
                         }
                     });
+                }
 
                 return doc;
             });
