@@ -97,7 +97,7 @@ paths:
       - Order
       summary: Devolver las ordenes en el estado que recibe por query param
       description: |
-        Esto se ejecuta todos los dias a las 22:00hs y genera una lista con las ordenes que estan en estado entregadas(DELIVERED) (flujo por defecto), ni bien lo hace las pasa a estado COMPLETED(asi se diferencia cuales ya fueron informadas y cuales no). Si hay ordenes en estado ON WAY se asume que estas fueron entregadas asique se les modifica el estado para informar ( y si es necesario se manda mail o se informa a reclamos).
+        Esto se ejecuta todos los dias a las 22:00hs y genera una lista con las ordenes que estan en estado entregadas(DELIVERED) y en camino (ON_WAY), ni bien lo hace las pasa a estado COMPLETED(asi se diferencia cuales ya fueron informadas y cuales no). Si hay ordenes en estado ON WAY se asume que estas fueron entregadas asique se les modifica el estado para informar ( y si es necesario  se informa a reclamos).
       operationId: getOrderByStatus
       produces:
       - application/json
@@ -105,6 +105,11 @@ paths:
       - name: estado
         in: query
         description: El estado que se quiere saber las ordenes. Si no recibe nada trae las de estado 'DELIVERED'.
+        required: false
+        type: string
+      - name: scheduled
+        in: query
+        description: Para saber si es el evento a las 22hs o no. Default: false.
         required: false
         type: string
       responses:
