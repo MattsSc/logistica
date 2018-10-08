@@ -109,7 +109,7 @@ paths:
         type: string
       - name: scheduled
         in: query
-        description: Para saber si es el evento a las 22hs o no. Default: false.
+        description: Para saber si es el evento a las 22hs o no. Default false.
         required: false
         type: string
       responses:
