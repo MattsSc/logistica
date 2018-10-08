@@ -32,8 +32,8 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 });
 
 
-const orderCtrl = require('./controllers/orderCtrl.js');
-const deliveryCtrl = require('./controllers/deliveryCtrl.js');
+const orderCtrl = require('./app/controllers/orderCtrl.js');
+const deliveryCtrl = require('./app/controllers/deliveryCtrl.js');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
