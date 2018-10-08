@@ -1,5 +1,5 @@
 const dbUtils = require('../../utils/dbUtils.js');
-const orderService = require('orderService.js');
+const orderService = require('./orderService.js');
 const fs = require('fs');
 const email =  require('../../utils/emailUtils.js');
 
@@ -12,29 +12,28 @@ function createMovil(movil) {
 
 function crearOrden(ord) {
     return {
-        orderId: ord.orden_id,
+        orden_id: ord.orden_id,
         nombre: ord.cliente.nombre,
         direccion: ord.cliente.direccion
     };
 }
 
-function guardarOrdenParaEntrega(ord) {
+exports.guardarOrdenParaEntrega = (ord) => {
     dbUtils.saveOrder(ord, "ON_WAY").then(doc =>{
         //TODO: descomentar esto para mandar mail.
         //email.mandarMail(ord, "ON_WAY");
     }).catch(err =>{
         return err;
     });
+};
 
-}
-
-function guardarOrdenNueva(ord) {
+exports.guardarOrdenNueva = (ord) => {
     dbUtils.saveOrder(ord, "NEW").then(doc =>{
         return doc;
     }).catch(err =>{
         return err;
     });
-}
+};
 
 exports.getFtpOrdersAndCreateDeliveryOrders = async () => {
    //TODO: Cambiar a ftp cuando consiga un modulo que funcione
@@ -59,12 +58,12 @@ exports.createDeliveryOrders = async (ordenesNuevas) => {
 
         console.log("Se empieza a crear las lista de entregas");
 
-        moviles.forEach(movil =>{
+        await moviles.forEach( movil =>{
             while(movil.peso >= 0 && ord < orders.length){
                 const orden = orders[ord];
                 if(movil.peso - orden.peso_total >= 0){
                     deliveryOrders.push(crearOrden(orden));
-                    guardarOrdenParaEntrega(orden);
+                    this.guardarOrdenParaEntrega(orden);
                     movil.peso -= orden.peso_total;
                     ord ++;
                 }else{
@@ -72,16 +71,15 @@ exports.createDeliveryOrders = async (ordenesNuevas) => {
                 }
             }
             let partialResult = {};
-            partialResult.orders = [];
+            partialResult.ordenes = [];
             partialResult.movil = createMovil(movil);
-            Object.assign(partialResult.orders , deliveryOrders);
+            Object.assign(partialResult.ordenes , deliveryOrders);
             deliveryOrders = [];
-            console.log(JSON.stringify(partialResult));
             result.push(partialResult);
         });
 
         while(ord < orders.length){
-            guardarOrdenNueva(orders[ord]);
+            await this.guardarOrdenNueva(orders[ord]);
             ord++;
         }
 

@@ -7,9 +7,9 @@ exports.createEndDayList = async () => {
     let result = [];
 
     //TODO: las que son on_way y se esta haciendo esto,hay que ver si tienen queja para notificar a reclamos.
-    endDayOrders.forEach(doc => {
+    endDayOrders.forEach(async doc => {
         result.push(doc.orden_id);
-        this.updateOrder(doc.orden_id,{estado: 'COMPLETED'} )
+        await this.updateOrder(doc.orden_id, {estado: 'COMPLETED'});
     });
 
     return {ordenes: result};
@@ -29,14 +29,15 @@ exports.updateStatus = async (orderId, estado) =>{
     try{
         const order = await this.getOrderById(orderId);
         if(order.estado !== estado){
-            order.fecha_entregado = (estado === 'DELIVERED') ? moment().format("YYYY-MM-DD HH:mm") : null ;
+            order.estado = estado;
+            order.fecha_entregado = (estado === 'DELIVERED') ? moment().format("YYYY-MM-DD'T'HH:mm:ss") : null ;
             const result = this.updateOrder(orderId, {estado: estado});
 
             if((estado === 'ON_WAY' || estado === 'DELIVERED') && !order.queja){
                 this.mandarMail(order, estado);
             }
 
-            return result;
+            return order;
         }
     }catch (e) {
         throw new  Error(e);

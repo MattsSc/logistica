@@ -1,7 +1,8 @@
-let assert = require('assert');
-let orderService = require('../app/services/orderService.js');
-let simple = require('simple-mock');
-let fs = require('fs');
+const assert = require('assert');
+const orderService = require('../app/services/orderService.js');
+const simple = require('simple-mock');
+const fs = require('fs');
+const moment = require('moment');
 
 
 describe('Orders', function() {
@@ -65,14 +66,15 @@ describe('Orders', function() {
             assert.equal(orderService.mandarMail.callCount, 0);
         });
 
-        it('Actualiza a DELIVERED y manda mail', async function() {
+        it('Actualiza a ON_WAY y manda mail', async function() {
             let ordMock ={estado : 'NEW', queja: false};
             simple.mock(orderService, 'mandarMail').returnWith(true);
             simple.mock(orderService,'getOrderById').returnWith(ordMock);
             simple.mock(orderService,'updateOrder').returnWith(true);
 
-            await orderService.updateStatus(1, 'ON_WAY');
+            const result = await orderService.updateStatus(1, 'ON_WAY');
 
+            assert.equal(result.fecha_entregado, null);
             assert.equal(orderService.mandarMail.callCount, 1);
         });
 
@@ -82,7 +84,9 @@ describe('Orders', function() {
             simple.mock(orderService,'getOrderById').returnWith(ordMock);
             simple.mock(orderService,'updateOrder').returnWith(true);
 
-            await orderService.updateStatus(1, 'DELIVERED');
+            const result = await orderService.updateStatus(1, 'DELIVERED');
+
+            assert.equal(result.fecha_entregado, moment().format("YYYY-MM-DD'T'HH:mm:ss"));
             assert.equal(orderService.mandarMail.callCount, 0);
         });
     });
