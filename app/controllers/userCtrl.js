@@ -5,6 +5,7 @@ const service = require('../services/userService.js');
 
 router.post('/login', async function (req, res) {
     try{
+        console.log("user is :" + JSON.stringify(req.body));
         const userId = await service.loginUser(req.body);
         if(userId == null)
             res.status(404).send("user not found");
