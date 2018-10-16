@@ -68,4 +68,19 @@ router.get('/', async function (req, res) {
     }
 });
 
+router.post('/', async function (req, res) {
+    try{
+        console.log("Creando Orden");
+
+        const result = await service.createOrder(req.body);
+
+        console.log("Orden creada satisfactoriamente");
+
+        res.send(result);
+    }catch (e) {
+        console.log("Hubo un error creando la orden : " + e.toString());
+        res.sendStatus(500);
+    }
+});
+
 module.exports = router;

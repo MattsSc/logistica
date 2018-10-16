@@ -10,6 +10,7 @@ let db;
 
 const ordersCollection = 'orders';
 const movilesCollection = 'moviles';
+const users = 'users';
 
 
 exports.connectDb = function(){
@@ -20,10 +21,9 @@ exports.connectDb = function(){
     });
 };
 //ORDERS
-exports.saveOrder = function(ord, estado){
+exports.saveOrder = function(ord){
     ord.fecha_recibido = ord.fecha_recibido || moment().format("YYYY-MM-DD HH:mm");
     ord.queja = ord.queja || false;
-    ord.estado = estado;
     const dbCollection = db.collection(ordersCollection);
     return dbCollection.save(ord);
 };
@@ -52,4 +52,10 @@ exports.getAllOrders = function(query) {
 exports.getAllMoviles = function() {
     const dbCollection = db.collection(movilesCollection);
     return dbCollection.find().toArray();
+};
+
+//USERS
+exports.findUser = function(user) {
+    const dbCollection = db.collection(users);
+    return dbCollection.findOne(user);
 };

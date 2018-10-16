@@ -2,6 +2,10 @@ const dbUtils = require('../../utils/dbUtils.js');
 const email = require('../../utils/emailUtils.js');
 const moment = require('moment');
 
+exports.createOrder = async (order) => {
+    return await dbUtils.saveOrder(order);
+};
+
 exports.createEndDayList = async () => {
     const endDayOrders = await this.getAll({$or:[{estado: 'DELIVERED'}, {estado: 'ON_WAY'}]});
     let result = [];

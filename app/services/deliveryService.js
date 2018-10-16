@@ -18,21 +18,18 @@ function crearOrden(ord) {
     };
 }
 
-exports.guardarOrdenParaEntrega = (ord) => {
-    dbUtils.saveOrder(ord, "ON_WAY").then(doc =>{
+exports.guardarOrdenParaEntrega = async (ord) => {
+    ord.estado = 'ON_WAY';
+    const result = await orderService.createOrder(ord);
+    if(result){
         //TODO: descomentar esto para mandar mail.
         //email.mandarMail(ord, "ON_WAY");
-    }).catch(err =>{
-        return err;
-    });
+    }
 };
 
-exports.guardarOrdenNueva = (ord) => {
-    dbUtils.saveOrder(ord, "NEW").then(doc =>{
-        return doc;
-    }).catch(err =>{
-        return err;
-    });
+exports.guardarOrdenNueva = async (ord) => {
+    ord.estado = 'NEW';
+    const result = await orderService.createOrder(ord);
 };
 
 exports.getFtpOrdersAndCreateDeliveryOrders = async () => {
