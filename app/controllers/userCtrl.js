@@ -6,7 +6,7 @@ const service = require('../services/userService.js');
 router.post('/login', async function (req, res) {
     try{
         const userId = await service.loginUser(req.body);
-        if(user == null)
+        if(userId == null)
             res.status(404).send("user not found");
 
         console.log("agregando session");
