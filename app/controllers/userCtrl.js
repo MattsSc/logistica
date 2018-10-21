@@ -2,6 +2,26 @@ const express = require('express');
 const router = express.Router();
 
 const service = require('../services/userService.js');
+const validator = require('../../utils/validators.js');
+
+router.post('/', async function (req, res) {
+    try{
+        const user = req.body;
+
+        if(validator.validateUser(user)){
+            console.log("Crear usuario");
+            await service.createUser(user);
+            res.sendStatus(201);
+        }else{
+            res.status(400).send("user not valid");
+        }
+    }catch (e) {
+        console.log(e.message);
+        if(e.message === "400")
+            res.status(400).send("user not valid or already exist");
+        res.sendStatus(500);
+    }
+});
 
 router.post('/login', async function (req, res) {
     try{

@@ -55,6 +55,11 @@ exports.getAllMoviles = function() {
 };
 
 //USERS
+exports.createUser = function(user) {
+    const dbCollection = db.collection(users);
+    return dbCollection.save(user);
+};
+
 exports.findUser = function(user) {
     const dbCollection = db.collection(users);
     return dbCollection.findOne(user);

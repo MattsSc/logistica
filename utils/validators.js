@@ -7,3 +7,7 @@ exports.validateIsNumber = (value) => {
 exports.validateBodyForUpdate = (estado) => {
     return estados.indexOf(estado) > -1
 };
+
+exports.validateUser = (user) => {
+    return (user.email && user.dni && user.localidad && user.direccion && user.password);
+};
