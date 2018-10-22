@@ -51,16 +51,14 @@ router.patch('/:orderId', async function (req, res) {
 
 router.get('/', async function (req, res) {
     try{
-        const estado = req.query.estado || 'DELIVERED';
-        let result;
+        const query = {
+            estado: req.query.estado || null
+        };
 
-        if(req.query.scheduled){
-            console.log("Se ejecuta el schedule, actualizacion de estado y creacion de archivo.");
-            result = await service.createEndDayList();
-        }else{
-            console.log("Se estan buscando las ordenes que esten en " + estado);
-            result = await service.getOrdersByStatus(estado);
-        }
+        console.log("Se estan buscando las ordenes con estos filtros:" + JSON.stringify(query));
+        const result = await service.getOrders(query.estado);
+
+        console.log("adadas " + result);
 
         res.send(result);
     }catch (e) {

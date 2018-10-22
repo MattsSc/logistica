@@ -56,12 +56,13 @@ exports.updateOrder = (orderId, query) => {
     });
 };
 
-exports.getOrdersByStatus = async (estado) => {
+exports.getOrders = async (estado) => {
     try{
-        const docs = this.getAllOrders({estado: estado});
-        let orders= [];
-        docs.forEach(doc =>{ orders.push(doc.orden_id) });
-        return {ordenes: orders};
+        let query = {};
+        if(estado != null)
+            query.estado = estado;
+
+        return await this.getAll(query);
     }catch (e) {
         console.log("Ha habido un error :" + e.toString());
         return e;
@@ -69,7 +70,7 @@ exports.getOrdersByStatus = async (estado) => {
 };
 
 exports.getAll = (query) => {
-    dbUtils.getAllOrders(query).then(docs => {
+    return dbUtils.getAllOrders(query).then(docs => {
         return docs
     }).catch(err => {
         return err;

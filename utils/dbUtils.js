@@ -1,6 +1,7 @@
 const mongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const moment = require('moment');
+const _ = require('lodash');
 
 // Connection URL
 const mongoUrl = 'mongodb://mongo:pass123@ds151602.mlab.com:51602/logistica';
@@ -20,6 +21,7 @@ exports.connectDb = function(){
         db = client.db(dbName);
     });
 };
+
 //ORDERS
 exports.saveOrder = function(ord){
     ord.fecha_recibido = ord.fecha_recibido || moment().format("YYYY-MM-DD HH:mm");
@@ -45,7 +47,12 @@ exports.patchOrder = function(id, query) {
 
 exports.getAllOrders = function(query) {
     const dbCollection = db.collection(ordersCollection);
-    return dbCollection.find(query).toArray();
+    if(!_.isEmpty(query))
+        return dbCollection.find(query).toArray();
+    else{
+        return dbCollection.find().toArray();
+    }
+
 };
 
 //MOVILES
