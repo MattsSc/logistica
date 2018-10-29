@@ -61,7 +61,6 @@ exports.getOrders = async (estado) => {
         let query = {};
         if(estado != null)
             query.estado = estado;
-
         return await this.getAll(query);
     }catch (e) {
         console.log("Ha habido un error :" + e.toString());

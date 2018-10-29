@@ -68,6 +68,7 @@ router.get('/', async function (req, res) {
 
 router.post('/', async function (req, res) {
     try{
+        console.log(req.headers);
         console.log("Creando Orden");
 
         const result = await service.createOrder(req.body);

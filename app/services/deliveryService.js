@@ -41,7 +41,7 @@ exports.getFtpOrdersAndCreateDeliveryOrders = async () => {
 
 exports.createDeliveryOrders = async (ordenesNuevas) => {
     try{
-        const orderesOld = await orderService.getOrdersByStatus('NEW');
+        const orderesOld = await orderService.getOrders('NEW');
 
         const moviles = await this.getAllMoviles();
 
