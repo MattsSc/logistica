@@ -2,6 +2,7 @@ const mongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const moment = require('moment');
 const _ = require('lodash');
+const mongoose = require('mongoose');
 
 // Connection URL
 const mongoUrl = 'mongodb://mongo:pass123@ds151602.mlab.com:51602/logistica';
@@ -15,6 +16,7 @@ const users = 'users';
 
 
 exports.connectDb = function(){
+    mongoose.connect(mongoUrl);
     mongoClient.connect(mongoUrl, function(err, client) {
         if (err) throw err;
         console.log("Connected successfully to DB");

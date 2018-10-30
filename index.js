@@ -70,6 +70,14 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.use(function errorHandler (err, req, res, next) {
+    if (req.xhr) {
+        res.status(500).send({ error: 'Something failed!' })
+    } else {
+        next(err)
+    }
+});
+
 app.use(basePath + '/order', orderCtrl);
 app.use(basePath + '/delivery', deliveryCtrl);
 app.use(basePath + '/user', userCtrl);
