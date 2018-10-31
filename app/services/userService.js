@@ -10,7 +10,7 @@ exports.createUser = async (user) => {
 };
 
 exports.loginUser = async (loginCred) => {
-    const userLogin = User.findOne(loginCred);
+    const userLogin =  await User.findOne(loginCred);
     return userLogin ? userLogin._id : userLogin;
 };
 
