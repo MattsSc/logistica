@@ -51,7 +51,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(session(sess));
 
-app.use(function (req, res, next) {
+app.use(function errorHandler (err, req, res, next) {
+
 
     // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -66,11 +67,7 @@ app.use(function (req, res, next) {
     // to the API (e.g. in case you use sessions)
     res.setHeader('Access-Control-Allow-Credentials', true);
 
-    // Pass to next layer of middleware
-    next();
-});
 
-app.use(function errorHandler (err, req, res, next) {
     if (req.xhr) {
         res.status(500).send({ error: 'Something failed!' })
     } else {
