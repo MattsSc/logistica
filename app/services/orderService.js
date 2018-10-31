@@ -1,9 +1,19 @@
 const dbUtils = require('../../utils/dbUtils.js');
 const email = require('../../utils/emailUtils.js');
+
+const Order = require('../models/order');
+const User = require('../models/user');
 const moment = require('moment');
 
-exports.createOrder = async (order) => {
-    return await dbUtils.saveOrder(order);
+exports.createOrder = async (body, userId) => {
+    const orden = new Order(body);
+
+    if(userId !== null){
+        const user = await User.findById(userId);
+        orden.origen = createOrigen(user);
+    }
+
+    return await orden.save();
 };
 
 exports.createEndDayList = async () => {
@@ -95,5 +105,14 @@ function setGetOrderResponse(doc) {
         fecha_entregado : doc.fecha_entregado,
         fecha_recibido: doc.fecha_recibido
     };
+}
+
+function createOrigen(user) {
+    return {
+        id: user._id,
+        nombre: user.nombre,
+        direccion: user.direccion
+    }
+
 }
 

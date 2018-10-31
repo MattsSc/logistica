@@ -19,19 +19,14 @@ router.get('/', async function (req, res) {
     }
 });
 
-router.post('/', async function (req, res) {
+router.post('/', async function (req, res, next) {
     try{
-        console.log(req.headers);
         console.log("Creando Orden");
-
-        const result = await service.createOrder(req.body);
-
+        const result = await service.createOrder(req.body, req.headers['x-user'] || null);
         console.log("Orden creada satisfactoriamente");
-
         res.send(result);
     }catch (e) {
-        console.log("Hubo un error creando la orden : " + e.toString());
-        res.sendStatus(500);
+        next();
     }
 });
 
