@@ -32,6 +32,7 @@ router.post('/login', async function (req, res, next) {
 
 router.get('/:userId/orders', async function(req, res, next){
     try{
+        console.log(JSON.stringify(req.headers));
         console.log("obteniendo ordenes para usuario");
         const userId = req.params.userId;
         if(userId === req.headers['x-user']){
