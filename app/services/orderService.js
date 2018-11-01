@@ -12,8 +12,8 @@ exports.createOrder = async (body, userId) => {
 
     if(userId !== null){
         const user = await User.findById(userId);
-        console.log("User : " + JSON.stringify(user));
         orden.origen = createOrigen(user);
+        console.log("orden:" + JSON.stringify(orden));
     }
 
     return await orden.save();
