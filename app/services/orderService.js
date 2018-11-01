@@ -1,6 +1,6 @@
 const dbUtils = require('../../utils/dbUtils.js');
 const email = require('../../utils/emailUtils.js');
-
+require('mongoose/')
 const Order = require('../models/order');
 const User = require('../models/user');
 const moment = require('moment');
@@ -13,9 +13,7 @@ exports.createOrder = async (body, userId) => {
     if(userId !== null){
         const user = await User.findById(userId);
         orden.origen = createOrigen(user);
-        console.log("orden:" + JSON.stringify(orden));
     }
-
     return await orden.save();
 };
 

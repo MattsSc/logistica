@@ -1,10 +1,7 @@
 const mongoose = require('mongoose');
 
 const orderSchema = mongoose.Schema({
-    orden_id: {
-        required: true,
-        type: Number
-    },
+    orden_id: Number,
     peso_total: {
         required: true,
         type: Number

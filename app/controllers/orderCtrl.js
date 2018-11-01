@@ -26,7 +26,10 @@ router.post('/', async function (req, res, next) {
         console.log("Orden creada satisfactoriamente");
         res.send(result);
     }catch (e) {
-        next();
+        if(e.name === 'ValidationError'){
+            res.status(400).send(e.message);
+        }else
+            next(e);
     }
 });
 
@@ -74,6 +77,5 @@ router.patch('/:orderId/complain', async function (req,res) {
         }
     }
 });
-
 
 module.exports = router;

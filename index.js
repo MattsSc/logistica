@@ -54,6 +54,7 @@ app.use(session(sess));
 app.use(cors());
 
 app.use(function errorHandler (err, req, res, next) {
+    console.log("hubo un error" + err);
     if (req.xhr) {
         res.status(500).send({ error: 'Something failed!' })
     } else {
