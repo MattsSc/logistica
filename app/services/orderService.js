@@ -8,6 +8,8 @@ const moment = require('moment');
 exports.createOrder = async (body, userId) => {
     const orden = new Order(body);
 
+    console.log('El usuario es: ' + userId);
+
     if(userId !== null){
         const user = await User.findById(userId);
         orden.origen = createOrigen(user);
