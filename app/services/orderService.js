@@ -66,15 +66,18 @@ exports.updateOrder = (orderId, query) => {
     });
 };
 
-exports.getOrders = async (estado) => {
+exports.getOrders = async (estado, userId) => {
     try{
-        let query = {};
-        if(estado != null)
-            query.estado = estado;
-        return await this.getAll(query);
+        const query = Order.find();
+
+        if(estado)
+            query.where('estado',estado);
+        if(userId)
+            query.where('origen.id', userId);
+
+        return await query.exec();
     }catch (e) {
-        console.log("Ha habido un error :" + e.toString());
-        return e;
+        next();
     }
 };
 
