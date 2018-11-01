@@ -6,7 +6,7 @@ router.post('/', async function (req, res, next) {
     try{
         console.log("Crear usuario");
         await service.createUser(req.body);
-        res.sendStatus(201);
+        res.sendStatus(200);
     }catch (e) {
         if(e.name === 'ValidationError' || e.message === "400")
             res.status(400).send("user not valid or already exist (" + e.message + ")");
