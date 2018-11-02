@@ -3,6 +3,7 @@ const assert = require('assert');
 const moment = require('moment');
 const _ = require('lodash');
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
 
 // Connection URL
 const mongoUrl = 'mongodb://mongo:pass123@ds151602.mlab.com:51602/logistica';
@@ -16,7 +17,9 @@ const users = 'users';
 
 
 exports.connectDb = function(){
+    const connection = mongoose.createConnection(mongoUrl);
     mongoose.connect(mongoUrl);
+    autoIncrement.initialize(connection);
     mongoClient.connect(mongoUrl, function(err, client) {
         if (err) throw err;
         console.log("Connected successfully to DB");

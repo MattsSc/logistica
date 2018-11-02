@@ -1,7 +1,14 @@
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
+
+// Connection URL
+const mongoUrl = 'mongodb://mongo:pass123@ds151602.mlab.com:51602/logistica';
+
+const connection = mongoose.createConnection(mongoUrl);
+autoIncrement.initialize(connection);
 
 const orderSchema = mongoose.Schema({
-    orden_id: Number,
+    orden_id: { type: Number, default: 9000 },
     peso_total: {
         required: true,
         type: Number
@@ -45,7 +52,15 @@ const orderSchema = mongoose.Schema({
     }
 });
 
+
+orderSchema.plugin(autoIncrement.plugin, {
+    model: 'Order',
+    field: 'orden_id',
+    startAt: 9100,
+    incrementBy:2
+});
 const Order = mongoose.model('orders', orderSchema);
+
 
 module.exports = Order;
 
