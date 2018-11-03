@@ -1,9 +1,6 @@
-const estados =["NEW", "RECEIVED", "ON_WAY", "DELIVERED", "COMPLETED"];
+const estados =["NEW", "ON_WAY", "DELIVERED", "COMPLETED", "CANCELLED"];
 
-exports.validateIsNumber = (value) => {
-    return /^\d+$/.test(value);
-};
 
-exports.validateBodyForUpdate = (estado) => {
-    return estados.indexOf(estado) > -1
+exports.canUpdateStatus = (actualStatus, newStatus) => {
+    return estados.indexOf(actualStatus) <= estados.indexOf(newStatus);
 };

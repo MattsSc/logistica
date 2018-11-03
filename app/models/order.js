@@ -8,7 +8,7 @@ const connection = mongoose.createConnection(mongoUrl);
 autoIncrement.initialize(connection);
 
 const orderSchema = mongoose.Schema({
-    orden_id: { type: Number, default: 9000 },
+    orden_id: { type: Number, default: 9100 },
     peso_total: {
         required: true,
         type: Number

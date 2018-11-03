@@ -10,6 +10,15 @@ exports.createUser = async (user) => {
         throw new Error("400");
 };
 
+exports.getUser = async (userId) => {
+    return await User.findById(userId);
+};
+
+exports.updateUser = async (user) => {
+    console.log(JSON.stringify(user));
+    return await User.findOneAndUpdate(user.id, user,{new: true});
+};
+
 exports.loginUser = async (loginCred) => {
     const userLogin =  await User.findOne(loginCred);
     return userLogin ? userLogin._id : userLogin;
