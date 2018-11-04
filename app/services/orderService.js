@@ -63,15 +63,13 @@ exports.deleteOrder = async(orderId) =>{
         return await order.remove();
     else
         throw new Error('400');
-}
+};
 
 exports.informComplain = async (orderId) =>{
     const order = await this.getOrderById(orderId);
     order.queja = true;
     await order.save();
 };
-
-
 
 exports.createEndDayList = async () => {
     const endDayOrders = await this.getAll({$or:[{estado: 'DELIVERED'}, {estado: 'ON_WAY'}]});

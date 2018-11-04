@@ -55,7 +55,7 @@ router.patch('/:orderId', async function (req, res, next) {
     console.log("Se actualiza la orden " + orderId);
     try{
         await service.updateOrder(orderId, req.body);
-        res.sendStatus(200);
+        res.status(200).send();
     }catch (e) {
         next(e);
     }
@@ -73,7 +73,6 @@ router.delete('/:orderId', async function (req, res, next) {
         next(e);
     }
 });
-
 
 router.patch('/:orderId/complain', async function (req,res, next) {
     const orderId = req.params.orderId;
