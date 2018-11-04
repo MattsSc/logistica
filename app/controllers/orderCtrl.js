@@ -52,7 +52,7 @@ router.get('/:orderId', async function (req, res, next) {
 
 router.patch('/:orderId', async function (req, res, next) {
     const orderId = req.params.orderId;
-    console.log("Se actualiza la orden");
+    console.log("Se actualiza la orden " + orderId);
     try{
         await service.updateOrder(orderId, req.body);
         res.sendStatus(200);
@@ -60,6 +60,20 @@ router.patch('/:orderId', async function (req, res, next) {
         next(e);
     }
 });
+
+router.delete('/:orderId', async function (req, res, next) {
+    const orderId = req.params.orderId;
+    console.log("Se elimina la orden " + orderId);
+    try{
+        await service.updateOrder(orderId, req.body);
+        res.sendStatus(200);
+    }catch (e) {
+        if(e.message === '400')
+            res.status(412).send('La orden no es nueva, no puede elminarse');
+        next(e);
+    }
+});
+
 
 router.patch('/:orderId/complain', async function (req,res, next) {
     const orderId = req.params.orderId;

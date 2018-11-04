@@ -57,6 +57,14 @@ exports.updateOrder = async (orderId, newOrder) =>{
     return order;
 };
 
+exports.deleteOrder = async(orderId) =>{
+    const order = await this.getOrderById(orderId);
+    if(order.estado === 'NEW')
+        return await order.remove();
+    else
+        throw new Error('400');
+}
+
 exports.informComplain = async (orderId) =>{
     const order = await this.getOrderById(orderId);
     order.queja = true;
