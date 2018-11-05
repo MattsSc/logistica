@@ -16,7 +16,7 @@ exports.getUser = async (userId) => {
 
 exports.updateUser = async (user) => {
     console.log(JSON.stringify(user));
-    return await User.findOneAndUpdate(user.id, user,{new: true});
+    return await User.findOneAndUpdate(user._id, user,{new: true});
 };
 
 exports.loginUser = async (loginCred) => {
