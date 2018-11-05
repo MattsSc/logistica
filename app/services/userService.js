@@ -17,8 +17,9 @@ exports.getUser = async (userId) => {
 exports.updateUser = async (user) => {
     console.log(JSON.stringify(user));
     const id = user._id;
+    delete user._id;
     console.log("Usuario a editar " + id);
-    return await User.findOneAndUpdate(id, user,{new: true});
+    return await User.findOneAndUpdate(id, user);
 };
 
 exports.loginUser = async (loginCred) => {
