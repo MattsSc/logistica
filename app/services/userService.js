@@ -18,7 +18,6 @@ exports.updateUser = async (user) => {
     console.log(JSON.stringify(user));
     const id = user._id;
     console.log("Usuario a editar " + id);
-    delete user._id;
     return await User.findOneAndUpdate(id, user,{new: true});
 };
 
