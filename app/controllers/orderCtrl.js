@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const service = require('../services/orderService.js');
-const validator = require('../../utils/validators.js');
 
 router.get('/', async function (req, res) {
     try{
@@ -66,7 +65,7 @@ router.delete('/:orderId', async function (req, res, next) {
     console.log("Se elimina la orden " + orderId);
     try{
         await service.updateOrder(orderId, req.body);
-        res.sendStatus(200);
+        res.status(200).send();
     }catch (e) {
         if(e.message === '400')
             res.status(412).send('La orden no es nueva, no puede elminarse');
@@ -79,7 +78,7 @@ router.patch('/:orderId/complain', async function (req,res, next) {
     console.log("Se informa queja a orden " + orderId);
     try{
         await service.informComplain(orderId);
-        res.sendStatus(200);
+        res.status(200).send();
     }catch (e) {
         next(e);
     }

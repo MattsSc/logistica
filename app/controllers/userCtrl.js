@@ -32,7 +32,7 @@ router.put('/:userId', async function (req, res, next) {
         console.log("Editar usuario");
         const userId = req.params.userId;
         validateUser(userId, req.headers['x-user'], res);
-        const result= await userService.updateUser(req.body);
+        const result= await userService.updateUser(userId, req.body);
         res.send(result);
     }catch (e) {
         next(e);
