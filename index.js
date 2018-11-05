@@ -59,7 +59,7 @@ app.use(cors());
 app.use(basePath + '/order', orderCtrl);
 app.use(basePath + '/delivery', deliveryCtrl);
 app.use(basePath + '/user', userCtrl);
-app.use(basePath + '/movil', movilCtrl);
+//app.use(basePath + '/movil', movilCtrl);
 app.use('/', express.static(__dirname + '/'));
 
 
