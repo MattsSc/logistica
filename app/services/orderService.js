@@ -59,8 +59,10 @@ exports.updateOrder = async (orderId, newOrder) =>{
 
 exports.deleteOrder = async(orderId) =>{
     const order = await this.getOrderById(orderId);
-    if(order.estado === 'NEW')
+    if(order.estado === 'NEW'){
+        console.log("La orden se puede eliminarse");
         return await order.remove();
+    }
     else
         throw new Error('400');
 };

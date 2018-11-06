@@ -65,6 +65,7 @@ router.delete('/:orderId', async function (req, res, next) {
     console.log("Se elimina la orden " + orderId);
     try{
         await service.updateOrder(orderId, req.body);
+        console.log("La orden se ha eliminado");
         res.status(200).send();
     }catch (e) {
         if(e.message === '400')
