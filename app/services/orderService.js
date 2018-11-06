@@ -63,8 +63,11 @@ exports.deleteOrder = async(orderId) =>{
         console.log("La orden se puede eliminarse");
         return await order.remove();
     }
-    else
+    else{
+        console.log("la order no ed NEW: " +JSON.stringify(order) );
         throw new Error('400');
+    }
+
 };
 
 exports.informComplain = async (orderId) =>{
