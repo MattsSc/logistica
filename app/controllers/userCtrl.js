@@ -15,6 +15,18 @@ router.post('/', async function (req, res, next) {
     }
 });
 
+router.get('/', async function (req, res, next) {
+    try{
+        console.log("Obtener usuario");
+        const userId = req.params.userId;
+        validateUserAdmin(userId,req.headers['x-user'],res);
+        const result= await userService.getUsers();
+        res.send(result);
+    }catch (e) {
+        next(e);
+    }
+});
+
 router.get('/:userId', async function (req, res, next) {
     try{
         console.log("Obtener usuario");
@@ -74,6 +86,11 @@ router.get('/:userId/orders', async function(req, res, next){
 
 function validateUser(userId, header, res){
     if(userId !== header){
+        res.status(403).send("Permission Denied");
+    }
+}
+function validateUserAdmin(header, res){
+    if(header !== 'admin'){
         res.status(403).send("Permission Denied");
     }
 }

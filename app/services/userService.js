@@ -14,6 +14,10 @@ exports.getUser = async (userId) => {
     return await User.findById(userId);
 };
 
+exports.getUsers = async () => {
+    return await User.find();
+};
+
 exports.updateUser = async (userId, user) => {
     console.log(JSON.stringify(user));
     console.log("Usuario a editar " + userId);
