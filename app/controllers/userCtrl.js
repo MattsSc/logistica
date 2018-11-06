@@ -17,9 +17,8 @@ router.post('/', async function (req, res, next) {
 
 router.get('/', async function (req, res, next) {
     try{
-        console.log("Obtener usuario");
-        const userId = req.params.userId;
-        validateUserAdmin(userId,req.headers['x-user'],res);
+        console.log("Obtener usuarios");
+        validateUserAdmin(req.headers['x-user'],res);
         const result= await userService.getUsers();
         res.send(result);
     }catch (e) {
@@ -90,6 +89,7 @@ function validateUser(userId, header, res){
     }
 }
 function validateUserAdmin(header, res){
+    console.log("HEADER " + header);
     if(header !== 'admin'){
         res.status(403).send("Permission Denied");
     }
