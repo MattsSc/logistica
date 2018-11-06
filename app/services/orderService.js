@@ -89,6 +89,7 @@ exports.createEndDayList = async () => {
     return {ordenes: result};
 
 };
+
 exports.getAll = (query) => {
     return dbUtils.getAllOrders(query).then(docs => {
         return docs

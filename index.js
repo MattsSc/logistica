@@ -21,11 +21,6 @@ const basePath = '/logistica';
 const fs = require('fs'),
     path = require('path');
 
-// swaggerRouter configuration
-const options = {
-    swaggerUi: path.join(__dirname, '/swagger.json'),
-    useStubs: process.env.NODE_ENV === 'development' // Conditionally turn on stubs (mock mode)
-};
 
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
 const spec = fs.readFileSync(path.join(__dirname,'api/swagger.yaml'), 'utf8');
@@ -45,7 +40,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 const orderCtrl = require('./app/controllers/orderCtrl.js');
 const deliveryCtrl = require('./app/controllers/deliveryCtrl.js');
 const userCtrl = require('./app/controllers/userCtrl.js');
-//const movilCtrl = require('./app/controllers/movilCtrl.js');
+const movilCtrl = require('./app/controllers/movilCtrl.js');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -54,14 +49,11 @@ app.use(bodyParser.json());
 app.use(session(sess));
 app.use(cors());
 
-
-
 app.use(basePath + '/order', orderCtrl);
 app.use(basePath + '/delivery', deliveryCtrl);
 app.use(basePath + '/user', userCtrl);
-//app.use(basePath + '/movil', movilCtrl);
+app.use(basePath + '/movil', movilCtrl);
 app.use('/', express.static(__dirname + '/'));
-
 
 app.use(function errorHandler (err, req, res, next) {
     console.log("hubo un error" + err);
