@@ -42,7 +42,8 @@ router.put('/:userId', async function (req, res, next) {
 router.post('/login', async function (req, res, next) {
     try{
         if(req.body.email === 'admin@admin.com'){
-            res.send('admin');
+            const admin = '"admin"';
+            res.send(admin);
         }
         const userId = await userService.loginUser(req.body);
         if(userId == null)
