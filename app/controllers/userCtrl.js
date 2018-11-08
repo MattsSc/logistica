@@ -84,7 +84,7 @@ router.get('/:userId/orders', async function(req, res, next){
 });
 
 function validateUser(userId, header, res){
-    if(userId !== header){
+    if(header !== 'admin' && userId !== header){
         res.status(403).send("Permission Denied");
     }
 }
