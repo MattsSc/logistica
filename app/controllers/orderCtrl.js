@@ -1,88 +1,18 @@
 const express = require('express');
 const router = express.Router();
 
-const service = require('../services/orderService.js');
+const logic = require('./logic/orderLogic.js');
 
-router.get('/', async function (req, res) {
-    try{
-        const query = {
-            estado: req.query.estado || null
-        };
-        console.log("Se estan buscando las ordenes con estos filtros:" + JSON.stringify(query));
-        const result = await service.getOrders(query.estado, null);
+router.get('/', logic.getOrders);
 
-        res.send(result);
-    }catch (e) {
-        res.sendStatus(404);
-    }
-});
+router.post('/', logic.createOrder);
 
-router.post('/', async function (req, res, next) {
-    try{
-        console.log("Creando Orden");
-        const result = await service.createOrder(req.body, req.headers['x-user'] || null);
-        console.log("Orden creada satisfactoriamente");
-        res.send(result);
-    }catch (e) {
-        if(e.name === 'ValidationError'){
-            res.status(400).send(e.message);
-        }else
-            next(e);
-    }
-});
+router.get('/:orderId', logic.getOrderById);
 
-router.get('/:orderId', async function (req, res, next) {
-    const orderId = req.params.orderId;
-    console.log("Se fue a buscar la orden con id " + orderId);
+router.patch('/:orderId', logic.updateOrder);
 
-    try{
-        const doc = await service.getOrderById(orderId);
-        if(doc != null)
-            res.send(doc);
-        else
-            res.sendStatus(404);
-    }catch (e) {
-        if(e.name === 'CastError'){
-            res.status(400).send(e.message);
-        }else
-            next(e);
-    }
-});
+router.delete('/:orderId', logic.deleteOrder);
 
-router.patch('/:orderId', async function (req, res, next) {
-    const orderId = req.params.orderId;
-    console.log("Se actualiza la orden " + orderId);
-    try{
-        await service.updateOrder(orderId, req.body);
-        res.status(200).send();
-    }catch (e) {
-        next(e);
-    }
-});
-
-router.delete('/:orderId', async function (req, res, next) {
-    const orderId = req.params.orderId;
-    console.log("Se elimina la orden " + orderId);
-    try{
-        await service.deleteOrder(orderId);
-        console.log("La orden se ha eliminado");
-        res.status(200).send();
-    }catch (e) {
-        if(e.message === '400')
-            res.status(412).send('La orden no es nueva, no puede elminarse');
-        next(e);
-    }
-});
-
-router.patch('/:orderId/complain', async function (req,res, next) {
-    const orderId = req.params.orderId;
-    console.log("Se informa queja a orden " + orderId);
-    try{
-        await service.informComplain(orderId);
-        res.status(200).send();
-    }catch (e) {
-        next(e);
-    }
-});
+router.patch('/:orderId/complain', logic.setOrderComplain);
 
 module.exports = router;

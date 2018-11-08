@@ -72,8 +72,12 @@ exports.deleteOrder = async(orderId) =>{
 
 exports.informComplain = async (orderId) =>{
     const order = await this.getOrderById(orderId);
-    order.queja = true;
-    await order.save();
+    if(order === null){
+        throw new Error("404");
+    }else{
+        order.queja = true;
+        await order.save();
+    }
 };
 
 exports.createEndDayList = async () => {

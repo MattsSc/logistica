@@ -1,4 +1,3 @@
-const dbUtils = require('../../utils/dbUtils.js');
 const orderService = require('./orderService.js');
 const fs = require('fs');
 const email =  require('../../utils/emailUtils.js');
