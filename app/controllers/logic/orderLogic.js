@@ -53,9 +53,9 @@ exports.updateOrder = async function (req, res, next) {
         await service.updateOrder(orderId, req.body);
         res.status(200).send();
     }catch (e) {
-        if(e.message() === '400')
+        if(e.message === '400')
             res.status(400).send();
-        if(e.message() === '423')
+        if(e.message === '423')
             res.status(423).send();
         next(e);
     }
