@@ -35,7 +35,12 @@ exports.getOrders = async (estado, userId) => {
 };
 
 exports.getOrderById = async (orderId) => {
-    return await Order.findOne().where('orden_id', orderId).exec();
+    const order = await Order.findOne().where('orden_id', orderId).exec();
+    if(order){
+        return order;
+    }else{
+        throw new Error('404');
+    }
 };
 
 exports.updateOrder = async (orderId, newOrder) =>{

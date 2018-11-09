@@ -17,7 +17,7 @@ const orderSchema = mongoose.Schema({
         type: Boolean,
         default: Boolean.false
     },
-    fecha_entregado: Date,
+    fecha_entregado: String,
     fecha_recibido: {
         type: Date,
         default: Date.now
