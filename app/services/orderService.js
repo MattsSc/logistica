@@ -57,6 +57,8 @@ exports.updateOrder = async (orderId, newOrder) =>{
         if((newOrder.estado === 'ON_WAY' || newOrder.estado === 'DELIVERED') && !order.queja){
             this.mandarMail(order, newOrder.estado);
         }
+    }else{
+        throw new Error('423');
     }
     await order.save();
     return order;
