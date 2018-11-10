@@ -87,42 +87,9 @@ exports.informComplain = async (orderId) =>{
     }
 };
 
-exports.createEndDayList = async () => {
-    const endDayOrders = await this.getAll({$or:[{estado: 'DELIVERED'}, {estado: 'ON_WAY'}]});
-    let result = [];
-
-    //TODO: las que son on_way y se esta haciendo esto,hay que ver si tienen queja para notificar a reclamos.
-    endDayOrders.forEach(async doc => {
-        result.push(doc.orden_id);
-        await this.updateOrder(doc.orden_id, {estado: 'COMPLETED'});
-    });
-
-    return {ordenes: result};
-
-};
-
-exports.getAll = (query) => {
-    return dbUtils.getAllOrders(query).then(docs => {
-        return docs
-    }).catch(err => {
-        return err;
-    });
-};
-
 exports.mandarMail = (order, estado) => {
     email.mandarMail(order, estado);
 };
-
-
-
-function setGetOrderResponse(doc) {
-    return {
-        id: doc.orden_id,
-        estado: doc.estado === 'COMPLETED' ? 'DELIVERED' : doc.estado,
-        fecha_entregado : doc.fecha_entregado,
-        fecha_recibido: doc.fecha_recibido
-    };
-}
 
 function createOrigen(user) {
     return {

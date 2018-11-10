@@ -1,6 +1,30 @@
 const orderService = require('./orderService.js');
 const fs = require('fs');
 const email =  require('../../utils/emailUtils.js');
+const ftp =  require('../../utils/ftpUtils.js');
+
+
+exports.getDeliveredOrders = async () =>{
+    const orders = await orderService.getOrders('DELIVERED', null);
+    const result = [];
+    orders.forEach(order => {
+        order.set('estado','COMPLETED');
+        result.push({ordenId: order.orden_id})
+    });
+    await ftp.saveFile(result);
+    orders.forEach(order => {
+        order.save();
+    })
+};
+
+
+
+
+
+
+
+
+
 
 function createMovil(movil) {
     return {
