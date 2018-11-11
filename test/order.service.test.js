@@ -89,24 +89,27 @@ describe('Orders', function() {
     });
 
     describe('Update Orders', function() {
-        it('Actualiza orden a ON_WAY que no tiene queja', async function() {
+        it('Actualiza orden a DELIVERED que no tiene queja', async function() {
             mock.mock(orderService, 'mandarMail').returnWith(true);
+            mock.mock(orderService, 'notificarReclamos').returnWith(true);
 
             const orden = {
-                estado:"ON_WAY"
+                estado:"DELIVERED"
             };
 
             await orderService.updateOrder(3, orden);
             const ordenUpdated = await orderService.getOrderById(3);
 
             expect(ordenUpdated.orden_id).to.be.equal(3);
-            expect(ordenUpdated.estado).to.be.equal('ON_WAY');
+            expect(ordenUpdated.estado).to.be.equal('DELIVERED');
             expect(ordenUpdated.queja).to.be.equal(false);
             expect(orderService.mandarMail.callCount).to.be.equal(1);
+            expect(orderService.notificarReclamos.callCount).to.be.equal(0);
         });
 
         it('Actualiza orden a DELIVERED que tiene queja', async function() {
             mock.mock(orderService, 'mandarMail').returnWith(true);
+            mock.mock(orderService, 'notificarReclamos').returnWith(true);
 
             const orden = {
                 estado:"DELIVERED"
@@ -119,6 +122,7 @@ describe('Orders', function() {
             expect(ordenUpdated.estado).to.be.equal('DELIVERED');
             expect(ordenUpdated.queja).to.be.equal(true);
             expect(orderService.mandarMail.callCount).to.be.equal(0);
+            expect(orderService.notificarReclamos.callCount).to.be.equal(1);
         });
 
         it('Actualiza una orden NEW y cambia datos cliente', async function() {

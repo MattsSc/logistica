@@ -7,6 +7,9 @@ const User = require('../models/user');
 
 const moment = require('moment');
 
+const axios = require('axios');
+
+
 exports.createOrder = async (body, userId) => {
     const orden = new Order(body);
 
@@ -55,8 +58,8 @@ exports.updateOrder = async (orderId, newOrder) =>{
         order.estado = newOrder.estado;
         order.fecha_entregado = (newOrder.estado === 'DELIVERED') ? moment().format("YYYY-MM-DD'T'HH:mm:ss") : null ;
 
-        if((newOrder.estado === 'ON_WAY' || newOrder.estado === 'DELIVERED') && !order.queja){
-            this.mandarMail(order, newOrder.estado);
+        if(newOrder.estado === 'DELIVERED'){
+            order.queja ? await this.notificarReclamos(order) : this.mandarMail(order, newOrder.estado) ;
         }
     }else{
         throw new Error('423');
@@ -90,6 +93,22 @@ exports.informComplain = async (orderId) =>{
 
 exports.mandarMail = (order, estado) => {
     email.mandarMail(order, estado);
+};
+
+exports.notificarReclamos = (order) => {
+
+    const body = {
+        id_pedido: order.orden_id,
+        fecha_entrega: moment().format('YYYY-MM-DD')
+    };
+
+    axios.post('http://{ip}:8080/api/public/reclamos/finalizar', body)
+        .then(response => {
+            console.log("Reclamos fue notificado")
+        })
+        .catch(error => {
+            console.log(error);
+        });
 };
 
 function createOrigen(user) {

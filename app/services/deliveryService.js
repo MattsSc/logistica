@@ -1,5 +1,10 @@
 const orderService = require('./orderService.js');
-const email =  require('../../utils/emailUtils.js');
+const movilService = require('./movilService.js');
+const fs = require('fs');
+
+
+const User = require('../models/user');
+
 const ftp =  require('../../utils/ftpUtils.js');
 
 
@@ -16,56 +21,24 @@ exports.getDeliveredOrders = async () =>{
     })
 };
 
-
-
-
-
-
-
-
-
-
-function createMovil(movil) {
-    return {
-        patente: movil.patente,
-        nombre: movil.nombre
-    };
-}
-
-function crearOrden(ord) {
-    return {
-        orden_id: ord.orden_id,
-        nombre: ord.cliente.nombre,
-        direccion: ord.cliente.direccion
-    };
-}
-
-exports.guardarOrdenParaEntrega = async (ord) => {
-    ord.estado = 'ON_WAY';
-    const result = await orderService.createOrder(ord);
-    if(result){
-        //TODO: descomentar esto para mandar mail.
-        //email.mandarMail(ord, "ON_WAY");
+exports.getFtpOrdersAndCreateDeliveryOrders = async (fileName) => {
+    const user = await User.findOne({prefix_file: fileName});
+    console.log('user ' + JSON.stringify(user));
+    try{
+        let newOrders = await this.getFileFromFTP(fileName);
+        console.log("file read");
+        return await this.createDeliveryOrders(newOrders, user);
+    }catch (e) {
+        throw new Error(e);
     }
+
 };
 
-exports.guardarOrdenNueva = async (ord) => {
-    ord.estado = 'NEW';
-    const result = await orderService.createOrder(ord);
-};
-
-exports.getFtpOrdersAndCreateDeliveryOrders = async () => {
-   //TODO: Cambiar a ftp cuando consiga un modulo que funcione
-
-    let newOrders = JSON.parse(fs.readFileSync('files/orders.json', 'utf8'));
-    return this.createDeliveryOrders(newOrders);
-};
-
-exports.createDeliveryOrders = async (ordenesNuevas) => {
+exports.createDeliveryOrders = async (ordenesNuevas, user) => {
     try{
         const orderesOld = await orderService.getOrders('NEW');
 
-        const moviles = await this.getAllMoviles();
+        const moviles = await movilService.getMoviles();
 
         console.log("Se encontraron " + orderesOld.length + " recibidas anteriormente sin entregar");
 
@@ -82,7 +55,7 @@ exports.createDeliveryOrders = async (ordenesNuevas) => {
                 const orden = orders[ord];
                 if(movil.peso - orden.peso_total >= 0){
                     deliveryOrders.push(crearOrden(orden));
-                    this.guardarOrdenParaEntrega(orden);
+                    guardarOrdenParaEntrega(orden, user);
                     movil.peso -= orden.peso_total;
                     ord ++;
                 }else{
@@ -98,7 +71,7 @@ exports.createDeliveryOrders = async (ordenesNuevas) => {
         });
 
         while(ord < orders.length){
-            await this.guardarOrdenNueva(orders[ord]);
+            await guardarOrdenNueva(orders[ord]);
             ord++;
         }
 
@@ -109,10 +82,40 @@ exports.createDeliveryOrders = async (ordenesNuevas) => {
     }
 };
 
-exports.getAllMoviles = () => {
-    return dbUtils.getAllMoviles().then(docs => {
-        return docs;
-    }).catch(err => {
-        return err;
-    })
+exports.getFileFromFTP = async (fileName) => {
+    await ftp.getFile(fileName);
+    console.log("file alredy get");
+    return JSON.parse(await fs.readFileSync('files/' + fileName +'.json', 'utf8'));
 };
+
+async function guardarOrdenNueva(ord,user) {
+    ord.estado = 'ON_WAY';
+    await orderService.createOrder(ord, user._id.toString());
+}
+
+async function  guardarOrdenParaEntrega(ord,user) {
+    console.log("se guarda orden " + JSON.stringify(ord));
+    if(ord._id){
+        ord.estado = 'ON_WAY';
+        await orderService.updateOrder(ord.orden_id, ord);
+    }else{
+        await guardarOrdenNueva(ord, user);
+    }
+}
+
+function crearOrden(ord) {
+    return {
+        orden_id: ord.orden_id,
+        nombre: ord.cliente.nombre + ' ' + ord.cliente.apellido,
+        direccion: ord.cliente.direccion,
+        origen: ord.origen
+    };
+}
+
+function createMovil(movil) {
+    return {
+        patente: movil.patente,
+        nombre: movil.nombre
+    };
+}
+
