@@ -1,0 +1,26 @@
+[
+  {
+    "email": "carlos@uade.com",
+    "nombre": "carlos alberto",
+    "dni": 23232323,
+    "direccion": "dasjdasjda",
+    "localidad": "sadhak",
+    "password": "12345"
+  },
+  {
+    "email": "seba@gmail.com",
+    "nombre": "Seba Gesnouin",
+    "dni": 39999828,
+    "direccion": "Potigian 123",
+    "localidad": "San Cristobal 2",
+    "password": "123456"
+  },
+  {
+    "email": "mati@gmail.com",
+    "nombre": "Matias Scan",
+    "dni": 44334344,
+    "direccion": "lala 234",
+    "localidad": "Quilmes",
+    "password": "12345"
+  }
+]
