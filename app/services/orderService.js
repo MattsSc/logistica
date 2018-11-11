@@ -30,6 +30,7 @@ exports.getOrders = async (estado, userId) => {
 
         return await query.exec();
     }catch (e) {
+        console.log("aqui3");
         next();
     }
 };

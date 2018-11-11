@@ -1,5 +1,4 @@
 const orderService = require('./orderService.js');
-const fs = require('fs');
 const email =  require('../../utils/emailUtils.js');
 const ftp =  require('../../utils/ftpUtils.js');
 
