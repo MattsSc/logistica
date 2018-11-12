@@ -48,12 +48,12 @@ exports.createDeliveryOrders = async (ordenesNuevas, user) => {
 
         console.log("Se empieza a crear las lista de entregas");
 
-        await moviles.forEach( movil =>{
+        await moviles.forEach( async movil =>{
             while(movil.peso >= 0 && ord < orders.length){
                 const orden = orders[ord];
                 if(movil.peso - orden.peso_total >= 0){
                     deliveryOrders.push(crearOrden(orden, user));
-                    guardarOrdenParaEntrega(orden, user);
+                    await guardarOrdenParaEntrega(orden, user);
                     movil.peso -= orden.peso_total;
                     ord ++;
                 }else{
