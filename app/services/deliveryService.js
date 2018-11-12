@@ -86,7 +86,7 @@ exports.createDeliveryOrders = async (ordenesNuevas, user) => {
 exports.getFileFromFTP = async (fileName) => {
     await ftp.getFile(fileName);
     console.log("file alredy get");
-    return JSON.parse(await fs.readFileSync('/files/' + fileName +'.json', 'utf8'));
+    return JSON.parse(await fs.readFileSync('files/' + fileName +'.json', 'utf8'));
 };
 
 exports.saveFileInFTP = async (bodyFile) =>{
