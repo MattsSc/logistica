@@ -1,4 +1,4 @@
-const service = require('../services/deliveryService.js');
+const service = require('../../services/deliveryService.js');
 
 exports.createRoutes = async function (req, res, next) {
     try{
