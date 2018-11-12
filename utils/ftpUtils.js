@@ -41,7 +41,7 @@ exports.getFile = async (prefix) => {
             password: ftpPassword,
             secure: true
         });
-        await client.download(await fs.createWriteStream('./files/' + prefix + '.json'), '/ftpseba/' + fileName,0)
+        await client.download(await fs.createWriteStream('files/' + prefix + '.json'), '/ftpseba/' + fileName,0)
     }
     catch(err) {
         console.log(err)
