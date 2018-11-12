@@ -1,10 +1,7 @@
 const orderService = require('./orderService.js');
 const movilService = require('./movilService.js');
 const fs = require('fs');
-
-
 const User = require('../models/user');
-
 const ftp =  require('../../utils/ftpUtils.js');
 
 
