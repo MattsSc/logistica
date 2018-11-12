@@ -177,7 +177,7 @@ describe('Orders', function() {
                 }
             };
 
-            const order = await orderService.createOrder(orden, null);
+            await orderService.createOrder(orden, null);
 
             const result = await Order.findOne({peso_total: 1});
 

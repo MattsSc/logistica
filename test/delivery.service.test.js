@@ -1,131 +1,124 @@
-const assert = require('assert');
 const deliveryService = require('../app/services/deliveryService.js');
-const orderService = require('../app/services/orderService.js');
-const simple = require('simple-mock');
+const Order = require('../app/models/order');
+const Movil = require('../app/models/movil');
+const User = require('../app/models/user');
+
+const mongoose = require('mongoose');
+const MongoMemoryServer = require('mongodb-memory-server').MongoMemoryServer;
+
+const expect = require('chai').expect;
+const mock = require('simple-mock');
 const fs = require('fs');
 
+let mongoServer;
+
+async function asyncForEach(array, callback) {
+    for(let index = 0; index < array.length; index ++){
+        await callback(array[index], index, array);
+    }
+}
+
+async function saveOrders(){
+    let orders = JSON.parse(fs.readFileSync('./test/resources/ordenes.json', 'utf8'));
+    let moviles = JSON.parse(fs.readFileSync('./test/resources/moviles.json', 'utf8'));
+    await asyncForEach(orders, async (order) => {
+        const or = new Order(order);
+        await or.save();
+    });
+    await asyncForEach(moviles, async (movil) => {
+        const mo = new Movil(movil);
+        await mo.save();
+    });
+}
+
+async function createUser (){
+    const userSave = {
+        email: "carlos@uade.com",
+        nombre: "carlos alberto",
+        dni: 23232323,
+        direccion: "dasjdasjda",
+        localidad: "sadhak",
+        password: "12345",
+        prefix_file: 'ordenes'
+    };
+
+    const user = new User(userSave);
+    await user.save();
+}
 
 describe('Delivery', function() {
+    this.timeout(60000);
 
-    it('Crear hoja de ruta de 2 moviles con 1 orden cada uno,ver que la de ayer se asigna primero', async function() {
-        let orders = JSON.parse(fs.readFileSync('./test/resources/2_orders_to_deliver.json', 'utf8'));
-
-        const moviles = [
-            {
-                "patente": "aaa975",
-                "nombre": "Lesa Russell",
-                "peso": 15
-            },
-            {
-                "patente": "aaa622",
-                "nombre": "Bethany Pennington",
-                "peso": 20
-            }
-        ];
-
-        const oldOrden = [{
-            "orden_id": 200,
-            "estado":"NEW",
-            "cliente": {
-                "nombre": "Soy viejo",
-                "direccion": "Calle falsa 123",
-                "dni": 37683370,
-                "email": "user@user.com"
-            },
-            "peso_total": 14,
-        }];
-
-        simple.mock(orderService,'getOrdersByStatus').returnWith(oldOrden);
-        simple.mock(deliveryService,'guardarOrdenNueva').returnWith(true);
-        simple.mock(deliveryService, 'guardarOrdenParaEntrega').returnWith(true);
-        simple.mock(deliveryService, 'getAllMoviles').returnWith(moviles);
-
-        const result = await deliveryService.createDeliveryOrders(orders);
-
-        assert.equal(result.length, 2);
-
-        assert.equal(result[0].ordenes[0].orden_id, 200);
-        assert.equal(result[0].ordenes[0].nombre, 'Soy viejo');
-        assert.equal(result[0].ordenes[0].direccion, "Calle falsa 123");
-
-        assert.equal(result[1].ordenes[0].orden_id, 0);
-        assert.equal(result[1].ordenes[0].nombre, 'Nadia Gross');
-        assert.equal(result[1].ordenes[0].direccion, "846 Temple Court, Shaft, Maine, 5302");
-
-        assert.equal(deliveryService.guardarOrdenParaEntrega.callCount, 2);
+    before((done) => {
+        mongoServer = new MongoMemoryServer();
+        mongoServer.getConnectionString().then((mongoUri) => {
+            return mongoose.connect(mongoUri, {}, (err) => {
+                if (err) done(err);
+            });
+        }).then(() => {
+            saveOrders().then(() => done());
+            //done();
+        });
     });
 
-    it('Crear hoja de ruta de 2 moviles con 1 orden cada uno', async function() {
-        let orders = JSON.parse(fs.readFileSync('./test/resources/2_orders_to_deliver.json', 'utf8'));
-
-        const moviles = [
-            {
-                "patente": "aaa975",
-                "nombre": "Lesa Russell",
-                "peso": 15
-            },
-            {
-                "patente": "aaa622",
-                "nombre": "Bethany Pennington",
-                "peso": 20
-            }
-            ];
-
-        simple.mock(orderService,'getOrdersByStatus').returnWith([]);
-        simple.mock(deliveryService,'guardarOrdenNueva').returnWith(true);
-        simple.mock(deliveryService, 'guardarOrdenParaEntrega').returnWith(true);
-        simple.mock(deliveryService, 'getAllMoviles').returnWith(moviles);
-
-        const result = await deliveryService.createDeliveryOrders(orders);
-
-        assert.equal(result.length, 2);
-
-        assert.equal(result[0].ordenes[0].orden_id, 0);
-        assert.equal(result[0].ordenes[0].nombre, 'Nadia Gross');
-        assert.equal(result[0].ordenes[0].direccion, "846 Temple Court, Shaft, Maine, 5302");
-
-        assert.equal(result[1].ordenes[0].orden_id, 1);
-        assert.equal(result[1].ordenes[0].nombre, "Jeri Nguyen");
-        assert.equal(result[1].ordenes[0].direccion, "832 Kingsway Place, Lynn, Guam, 9293");
-
-        assert.equal(deliveryService.guardarOrdenParaEntrega.callCount, 2);
+    after(() => {
+        Order.remove({}, function(err) {
+            Movil.remove({}, function(err){
+                console.log('collection removed');
+                mongoose.disconnect();
+                mongoServer.stop();
+            });
+        });
     });
 
-    it('Crear hoja de ruta de 2 moviles con 1 orden cada uno y una se guarda para mañana', async function() {
-        let orders = JSON.parse(fs.readFileSync('./test/resources/3_orders_to_deliver.json', 'utf8'));
 
-        const moviles = [
+    it('Obtener ordenes entregadas', async function() {
+        mock.mock(deliveryService, 'saveFileInFTP').returnWith(true);
+        const result = await deliveryService.getDeliveredOrders();
+
+        expect(result.length).to.be.equal(2);
+        expect(result[0].ordenId).to.be.equal(0);
+        expect(result[1].ordenId).to.be.equal(2);
+        expect(deliveryService.saveFileInFTP.callCount).to.be.equal(1);
+
+    });
+
+    it('Crear hoja de ruta', async function() {
+        mock.mock(deliveryService, 'getFileFromFTP').returnWith([
             {
-                "patente": "aaa975",
-                "nombre": "Lesa Russell",
-                "peso": 15
+                "orden_id": 10000,
+                "cliente": {
+                    "nombre": "Nadia",
+                    "apellido": "Gross",
+                    "direccion": "846 Temple Court, Shaft, Maine, 5302",
+                    "dni": 37683370,
+                    "email": "user@user.com"
+                },
+                "peso_total": 14
             },
             {
-                "patente": "aaa622",
-                "nombre": "Bethany Pennington",
-                "peso": 20
+                "orden_id":10001,
+                "cliente": {
+                    "nombre": "Nadia",
+                    "apellido": "Gross",
+                    "direccion": "846 Temple Court, Shaft, Maine, 5302",
+                    "dni": 37683370,
+                    "email": "user@user.com"
+                },
+                "peso_total": 14
             }
-        ];
+        ]);
 
-        simple.mock(orderService,'getOrdersByStatus').returnWith([]);
-        simple.mock(deliveryService,'guardarOrdenNueva').returnWith(true);
-        simple.mock(deliveryService, 'guardarOrdenParaEntrega').returnWith(true);
-        simple.mock(deliveryService, 'getAllMoviles').returnWith(moviles);
+        await createUser();
+        const result = await deliveryService.getFtpOrdersAndCreateDeliveryOrders('ordenes');
 
-        const result = await deliveryService.createDeliveryOrders(orders);
+        console.log(JSON.stringify(result));
 
-        assert.equal(result.length, 2);
-
-        assert.equal(result[0].ordenes[0].orden_id, 0);
-        assert.equal(result[0].ordenes[0].nombre, 'Nadia Gross');
-        assert.equal(result[0].ordenes[0].direccion, "846 Temple Court, Shaft, Maine, 5302");
-
-        assert.equal(result[1].ordenes[0].orden_id, 1);
-        assert.equal(result[1].ordenes[0].nombre, "Jeri Nguyen");
-        assert.equal(result[1].ordenes[0].direccion, "832 Kingsway Place, Lynn, Guam, 9293");
-
-        assert.equal(deliveryService.guardarOrdenParaEntrega.callCount, 2);
-        assert.equal(deliveryService.guardarOrdenNueva.callCount, 1);
+        expect(result.length).to.be.equal(6);
+        expect(result[0].ordenes.length).to.be.equal(4);
+        result[0].ordenes.forEach(ord =>{
+            expect(ord.origen).to.be.not.undefined;
+        })
     });
 
 });

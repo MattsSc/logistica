@@ -15,10 +15,11 @@ exports.getDeliveredOrders = async () =>{
         order.set('estado','COMPLETED');
         result.push({ordenId: order.orden_id})
     });
-    await ftp.saveFile(result);
+    this.saveFileInFTP(result);
     orders.forEach(order => {
         order.save();
-    })
+    });
+    return result;
 };
 
 exports.getFtpOrdersAndCreateDeliveryOrders = async (fileName) => {
@@ -54,7 +55,7 @@ exports.createDeliveryOrders = async (ordenesNuevas, user) => {
             while(movil.peso >= 0 && ord < orders.length){
                 const orden = orders[ord];
                 if(movil.peso - orden.peso_total >= 0){
-                    deliveryOrders.push(crearOrden(orden));
+                    deliveryOrders.push(crearOrden(orden, user));
                     guardarOrdenParaEntrega(orden, user);
                     movil.peso -= orden.peso_total;
                     ord ++;
@@ -85,7 +86,12 @@ exports.createDeliveryOrders = async (ordenesNuevas, user) => {
 exports.getFileFromFTP = async (fileName) => {
     await ftp.getFile(fileName);
     console.log("file alredy get");
-    return JSON.parse(await fs.readFileSync('files/' + fileName +'.json', 'utf8'));
+    return JSON.parse(await fs.readFileSync('/files/' + fileName +'.json', 'utf8'));
+};
+
+exports.saveFileInFTP = async (bodyFile) =>{
+    console.log("save file in ftp");
+    await ftp.saveFile(bodyFile);
 };
 
 async function guardarOrdenNueva(ord,user) {
@@ -103,12 +109,12 @@ async function  guardarOrdenParaEntrega(ord,user) {
     }
 }
 
-function crearOrden(ord) {
+function crearOrden(ord, user) {
     return {
         orden_id: ord.orden_id,
         nombre: ord.cliente.nombre + ' ' + ord.cliente.apellido,
         direccion: ord.cliente.direccion,
-        origen: ord.origen
+        origen: ord.origen ? ord.origen : createOrigen(user)
     };
 }
 
@@ -119,3 +125,10 @@ function createMovil(movil) {
     };
 }
 
+function createOrigen(user){
+    return {
+        id: user._id.toString(),
+        nombre: user.nombre,
+        direccion: user.direccion
+    }
+}
