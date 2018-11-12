@@ -13,8 +13,8 @@ const ftpUserDelivered1= "ia_almacen@navalparts.com.ar";
 const ftpPasswordDelivered1="ZuritaSpeed1";
 
 const ftpHostDelivered5 = "ftp.drivehq.com";
-const ftpUserDelivered5 = "grupo5";
-const ftpPasswordDelivered5 ="grupo5";
+const ftpUserDelivered5 = "almacen5";
+const ftpPasswordDelivered5 ="almacen5";
 
 
 exports.saveFile = async (body) => {
