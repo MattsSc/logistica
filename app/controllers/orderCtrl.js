@@ -13,6 +13,6 @@ router.patch('/:orderId', logic.updateOrder);
 
 router.delete('/:orderId', logic.deleteOrder);
 
-router.patch('/:orderId/complain', logic.setOrderComplain);
+router.post('/:orderId/complain', logic.setOrderComplain);
 
 module.exports = router;

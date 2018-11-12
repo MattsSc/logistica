@@ -8,6 +8,14 @@ const ftpHost = "ftp.drivehq.com";
 const ftpUser= "sgesnouin";
 const ftpPassword="Martes38*t";
 
+const ftpHostDelivered1 = "navalparts.com.ar";
+const ftpUserDelivered1= "ia_almacen@navalparts.com.ar";
+const ftpPasswordDelivered1="ZuritaSpeed1";
+
+const ftpHostDelivered5 = "ftp.drivehq.com";
+const ftpUserDelivered5 = "grupo5";
+const ftpPasswordDelivered5 ="grupo5";
+
 
 exports.saveFile = async (body) => {
     const client = new ftp.Client();
@@ -15,12 +23,12 @@ exports.saveFile = async (body) => {
     const fileName = 'delivered-' + moment().format('YYYY-MM-DD')  + '.json';
     try {
         await client.access({
-            host: ftpHost,
-            user: ftpUser,
-            password: ftpPassword,
+            host: ftpHostDelivered5,
+            user: ftpUserDelivered5,
+            password: ftpPasswordDelivered5,
             secure: true
         });
-        await client.upload(createStreamToSave(body), '/ftpseba/' + fileName)
+        await client.upload(createStreamToSave(body), '/tpo/' + fileName)
     }
     catch(err) {
         console.log(err)
@@ -41,7 +49,7 @@ exports.getFile = async (prefix) => {
             password: ftpPassword,
             secure: true
         });
-        await client.download(await fs.createWriteStream('files/' + prefix + '.json',{flags: 'w'}), '/ftpseba/' + fileName,0)
+        await client.download(await fs.createWriteStream('files/' + prefix + '.json',{flags: 'w'}), '/' + fileName,0)
     }
     catch(err) {
         console.log(err)

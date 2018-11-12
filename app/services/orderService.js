@@ -102,7 +102,7 @@ exports.notificarReclamos = (order) => {
         fecha_entrega: moment().format('YYYY-MM-DD')
     };
 
-    axios.post('http://{ip}:8080/api/public/reclamos/finalizar', body)
+    axios.post('http://192.168.1.138:9000/api/public/reclamos/finalizar', body)
         .then(response => {
             console.log("Reclamos fue notificado")
         })
