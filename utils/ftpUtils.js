@@ -28,7 +28,7 @@ exports.saveFile = async (body) => {
             password: ftpPasswordDelivered5,
             secure: true
         });
-        await client.upload(createStreamToSave(body), '/tpo/' + fileName)
+        await client.upload(createStreamToSave(body), '/' + fileName)
     }
     catch(err) {
         console.log(err)
@@ -49,7 +49,7 @@ exports.getFile = async (prefix) => {
             password: ftpPassword,
             secure: true
         });
-        await client.download(await fs.createWriteStream('files/' + prefix + '.json',{flags: 'w'}), '/' + fileName,0)
+        await client.download(await fs.createWriteStream('files/' + prefix + '.json',{flags: 'w'}), '/tpo/' + fileName,0)
     }
     catch(err) {
         console.log(err)
