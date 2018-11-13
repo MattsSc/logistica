@@ -2,7 +2,9 @@ const service = require('../../services/deliveryService.js');
 
 exports.createRoutes = async function (req, res, next) {
     try{
-        const result =  await service.getFtpOrdersAndCreateDeliveryOrders(req.query.fileName);
+        const result =  await service.getFtpOrdersAndCreateDeliveryOrders( req.query.fileName.split('.')[0] );
+        res.header("Content-Type", "application/octet-stream");
+        res.header('Content-Disposition', 'attachment; filename="rutas.json"');
         return res.send(result);
     }catch (e) {
         next(e);
