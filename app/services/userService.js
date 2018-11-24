@@ -27,6 +27,6 @@ exports.updateUser = async (userId, user) => {
 
 exports.loginUser = async (loginCred) => {
     const userLogin =  await User.findOne(loginCred);
-    return userLogin ? userLogin._id : userLogin;
+    return userLogin && userLogin.isActive ? userLogin._id : userLogin;
 };
 
