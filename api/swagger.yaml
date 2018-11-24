@@ -431,6 +431,9 @@ definitions:
         type: string
         format: date-time
         example: 2016-08-29T09:12:33.01Z
+      peso_total:
+        type: number
+        example: 100
       cliente:
         $ref: '#/definitions/Cliente'
       origen:
@@ -484,6 +487,9 @@ definitions:
       nombre:
         type: string
         example: Matias Scandroglio
+      dni:
+        type: number
+        example: 35155555
       email:
         type: string
         format: email
