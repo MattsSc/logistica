@@ -21,6 +21,10 @@ const usersSchema = mongoose.Schema({
         required: true,
         type: String
     },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
     prefix_file: String,
     dni: Number
 });
