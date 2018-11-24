@@ -14,11 +14,189 @@ basePath: /logistica
 tags:
 - name: Order
   description: Operaciones permitidas para ordenes
+- name: User
+  description: Opercaiones permitidas para los usuarios
+- name: Movil
+  description: Operaciones permitidas para moviles
 - name: Delivery
   description: Opercaiones permitidas para las hojas de ruta
 schemes:
 - https
 paths:
+  /user:
+    get:
+      tags:
+      - User
+      summary: Devolver todos los usuarios
+      description:  Devolver todos los usuarios
+      operationId: getUsers
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Devuelve todos los usuarios
+          schema:
+            $ref: '#/definitions/User'
+        500:
+          description: Error en el servidor
+    post:
+      tags:
+      - User
+      summary: Crea un usuario.
+      description: Servicio que permite crear un usuario.
+      operationId: createUser
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: user
+        description: The user to create.
+        schema:
+          $ref: '#/definitions/User'
+      responses:
+        200:
+          description: Usuario creado
+        400:
+          description: Error en validacion.
+        500:
+          description: Error en el servidor
+  /user/{userId}:
+    get:
+      tags:
+      - User
+      summary: Buscar usuario por id.
+      description: Devuelve un usuario por Id
+      operationId: findUserById
+      produces:
+      - application/json
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: Devuelve la orden pedida
+          schema:
+            $ref: '#/definitions/User'
+        500:
+          description: Error
+    put:
+      tags:
+      - User
+      summary: Actualiza el usuario
+      description: Actualiza el usuario
+      operationId: updateUserById
+      produces:
+      - application/json
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: Orden actualizada
+        500:
+          description: Error
+  /user/{userId}/orders:
+    get:
+      tags:
+      - User
+      summary: Obtiene las ordenes para el usuario
+      description: Obtiene las ordenes para el usuario
+      operationId: findOrdersByUser
+      produces:
+      - application/json
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: Lista de ordenes
+          schema:
+            $ref: '#/definitions/Order'
+        500:
+          description: Error
+  /user/login:
+    post:
+      tags:
+      - User
+      summary: Permite loguear al usuario.
+      description: Devuelve el token id para el usuario logueado.
+      operationId: loginUser
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: loginForm
+        required: true
+        schema:
+          type: object
+          required:
+          - email
+          - password
+          properties:
+            email:
+              type: string
+            password:
+              type: string
+      responses:
+        200:
+          description: Devuelve el token del usuario
+        500:
+          description: Error
+  /order:
+    get:
+      tags:
+      - Order
+      summary: Devolver las ordenes en el estado que recibe por query param
+      description: |
+        Esto se ejecuta todos los dias a las 22:00hs y genera una lista con las ordenes que estan en estado entregadas(DELIVERED) y en camino (ON_WAY), ni bien lo hace las pasa a estado COMPLETED(asi se diferencia cuales ya fueron informadas y cuales no). Si hay ordenes en estado ON WAY se asume que estas fueron entregadas asique se les modifica el estado para informar ( y si es necesario  se informa a reclamos).
+      operationId: getOrderByStatus
+      produces:
+      - application/json
+      parameters:
+      - name: estado
+        in: query
+        description: El estado que se quiere saber las ordenes. Si no recibe nada trae las de estado 'DELIVERED'.
+        required: false
+        type: string
+      - name: scheduled
+        in: query
+        description: Para saber si es el evento a las 22hs o no. Default false.
+        required: false
+        type: string
+      responses:
+        200:
+          description: Devuelve la orden pedida
+          schema:
+            $ref: '#/definitions/Order'
+        500:
+          description: Error en el servidor
+    post:
+      tags:
+      - Order
+      summary: Crea una orden.
+      description: Servicio que permite crear una orden.
+      operationId: createOrder
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: user
+        description: The user to create.
+        schema:
+          $ref: '#/definitions/Order'
+      responses:
+        200:
+          description: Orden creada
+        400:
+          description: Error en validacion.
+        500:
+          description: Error en el servidor
   /order/{orderId}:
     get:
       tags:
@@ -38,7 +216,7 @@ paths:
         200:
           description: Devuelve la orden pedida
           schema:
-            $ref: '#/definitions/OrderLogistica'
+            $ref: '#/definitions/Order'
         400:
           description: Mal formato del id de orden
         404:
@@ -69,8 +247,27 @@ paths:
           description: Algun parametro es invalido
         404:
           description: La orden no existe
+    delete:
+      tags:
+      - Order
+      summary: Eliminar la orden
+      description: Eliminar la orden si esta en estado 'NEW'.
+      operationId: deleteOrder
+      produces:
+      - application/json
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: Elimina la orden
+        412:
+          description: Orden no puede ser eliminada.
   /order/{orderId}/complain:
-    patch:
+
+    post:
       tags:
       - Order
       summary: Informa queja en una orden
@@ -91,120 +288,137 @@ paths:
           description: el formato del id es incorrecto
         500:
           description: Hubo algun error
-  /order:
+  /movil:
     get:
       tags:
-      - Order
-      summary: Devolver las ordenes en el estado que recibe por query param
-      description: |
-        Esto se ejecuta todos los dias a las 22:00hs y genera una lista con las ordenes que estan en estado entregadas(DELIVERED) y en camino (ON_WAY), ni bien lo hace las pasa a estado COMPLETED(asi se diferencia cuales ya fueron informadas y cuales no). Si hay ordenes en estado ON WAY se asume que estas fueron entregadas asique se les modifica el estado para informar ( y si es necesario  se informa a reclamos).
-      operationId: getOrderByStatus
+      - Movil
+      summary: Devolver todos los moviles
+      description:  Devolver todos los moviles
+      operationId: getMoviles
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Devuelve todos los moviles
+          schema:
+            $ref: '#/definitions/Movil'
+        500:
+          description: Error en el servidor
+    post:
+      tags:
+      - Movil
+      summary: Crea un movil.
+      description: Servicio que permite crear un movil.
+      operationId: createMovil
       produces:
       - application/json
       parameters:
-      - name: estado
-        in: query
-        description: El estado que se quiere saber las ordenes. Si no recibe nada trae las de estado 'DELIVERED'.
-        required: false
-        type: string
-      - name: scheduled
-        in: query
-        description: Para saber si es el evento a las 22hs o no. Default false.
-        required: false
+      - in: body
+        name: user
+        description: El movil para crear.
+        schema:
+          $ref: '#/definitions/Movil'
+      responses:
+        200:
+          description: Movil creado
+        500:
+          description: Error en el servidor
+  /movil/{movilId}:
+    get:
+      tags:
+      - Movil
+      summary: Buscar movil
+      description: Devuelve el movil por id
+      operationId: searchMovilById
+      produces:
+      - application/json
+      parameters:
+      - name: movilId
+        in: path
+        required: true
         type: string
       responses:
         200:
-          description: Devuelve la orden pedida
+          description: Devuelve el movil pedido
           schema:
-            $ref: '#/definitions/Delivered'
+            $ref: '#/definitions/Movil'
         500:
           description: Error en el servidor
-  /delivery:
+    put:
+      tags:
+      - Movil
+      summary: Actualiza un movil
+      description: Actualiza el movil
+      operationId: updateMovil
+      produces:
+      - application/json
+      parameters:
+      - name: movilId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: Movil actualizadao
+        500:
+          description: Error en el servidor
+    delete:
+      tags:
+      - Movil
+      summary: Eliminar el movil
+      description: Eliminar el movil.
+      operationId: deleteMovil
+      produces:
+      - application/json
+      parameters:
+      - name: movilId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: Elimina el movil.
+        500:
+          description: Error en el servidor.
+  /delivery/createList:
+    post:
+      tags:
+      - Delivery
+      summary: crea lista de ordenes entregadas
+      description: Crea la lista de las ordenes que fueron entregadas ese dia, es decir las ordenes que pasaron a estado "DELIVERED" hy guarda el archivo en el ftp definido.
+      operationId: createDeliveryList
+      produces:
+      - application/json
+      responses:
+        200:
+          description: El archivo se guardo correctamente
+        500:
+          description: Error en el servidor
+  /delivery/routes:
     post:
       tags:
       - Delivery
       summary: crea las hojas de rutas
-      description: "Crea las hojas de rutas para el dia de la fecha. Se ejecuta todos\
-        \ los dias a las 8:30AM. El input es un archivo json que lo depositan en el\
-        \ FTP (definir url) con el nombre (a definir). El body del archivo es a definir,\
-        \ cuando lo tenga lo subo como si fuera el body asi ya sabemos. \n\nSe asignan\
-        \ las ordenes ingresadas mas las que quedaron pendientes a los moviles(fleteros).\
-        \ Se asume que cada movil tiene un peso posible a llevar asique se asignan\
-        \ ordenes hasta cumplir dicho peso. Si sobran pedidos se los asigna al dia\
-        \ siguiente.\n\nLa respuesta es en el formato definido pero va dentro de un\
-        \ archivo JSON que lo depositamos en el mismo FTP con el nombre rutas-YYYY-MM-dd.json\n"
-      operationId: createDeliveryList
+      description: Obtiene el archivo del ftp definido y obtiene las ordenes en estado "NEW" que fueron creadas para generar asi la hoja de rutas. Esto funciona ya que las ordenes se les asigna a los moviles que se encuentran. Cada movil tiene su propio peso y se les asigna las ordenes acorde a eso.
+      operationId: createRouteList
       produces:
       - application/json
-      parameters: []
       responses:
         200:
-          description: search results matching criteria
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Route'
-        404:
-          description: today orders not found
+          description: La hoja de ruta se genera correctamente
+        500:
+          description: Error en el servidor
 definitions:
-  Delivered:
-    type: object
-    properties:
-      ordenes:
-        type: array
-        items:
-          type: string
-          example: aaa111
-    example:
-      ordenes:
-      - aaa111
-      - aaa111
-  Producto:
+  Order:
     type: object
     required:
-    - peso
+    - peso_total
+    - cliente
     properties:
-      id:
+      orden_id:
         type: string
-        format: uuid
-        example: aaa111
-      cantidad:
-        type: integer
-        example: 2
-      descripcion:
-        type: string
-        example: heladera
-      peso:
-        type: integer
-        example: 5
-  Cliente:
-    type: object
-    required:
-    - domicilio
-    - email
-    - nombre
-    properties:
-      nombre:
-        type: string
-        example: 4444-4444
-      domicilio:
-        type: string
-        example: Calle false 123
-      email:
-        type: string
-        format: email
-        example: aaaa@aaaa.com
-  OrderLogistica:
-    type: object
-    required:
-    - fecha_recibido
-    - id
-    - estado
-    properties:
-      id:
-        type: string
-        format: uuid
-        example: aaa111
+        format: integer
+        example: 1
       fecha_recibido:
         type: string
         format: date-time
@@ -217,80 +431,88 @@ definitions:
         type: string
         format: date-time
         example: 2016-08-29T09:12:33.01Z
-    example:
-      id: aaa111
-      fecha_recibido: 2016-08-29T09:12:33.01Z
-      fecha_entregado: 2016-08-29T09:12:33.01Z
-      estado: NEW | RECEIVED | ON WAY | DELIVERED
-  Route:
+      cliente:
+        $ref: '#/definitions/Cliente'
+      origen:
+        $ref: '#/definitions/Origen'
+  Cliente:
     type: object
     required:
-    - date
-    - id
-    - movil
-    - pedidos
+    - domicilio
+    - email
+    - nombre
+    - apellido
     properties:
+      nombre:
+        type: string
+        example: Matias
+      apellido:
+        type: string
+        example: Scandroglio
+      domicilio:
+        type: string
+        example: Calle false 123
+      email:
+        type: string
+        format: email
+        example: aaaa@aaaa.com
+  Origen:
+    type: object
+    required:
+    - id
+    - direccion
+    - nombre
+    properties:
+      nombre:
+        type: string
+        example: Matias Scandroglio
       id:
         type: string
-        format: uuid
-        example: aaa111
-      date:
+        example: adfh4ih48rhf
+      direccion:
         type: string
-        format: date-time
-        example: 2016-08-29T09:12:33.01Z
-      movil:
-        $ref: '#/definitions/Movil'
-      pedidos:
-        type: array
-        items:
-          $ref: '#/definitions/Pedido'
-    example:
-      date: 2016-08-29T09:12:33.01Z
-      movil:
-        nombre: Mario Perez
-        patente: aqs123
-      id: aaa111
-      pedidos:
-      - cliente: Maria Gonzalez
-        direccion: Calle falsa 123
-        dni: "111111111"
-      - cliente: Maria Gonzalez
-        direccion: Calle falsa 123
-        dni: "111111111"
+        example: la rioja 241
+  User:
+    type: object
+    required:
+    - email
+    - password
+    - direccion
+    - nombre
+    - dni
+    properties:
+      nombre:
+        type: string
+        example: Matias Scandroglio
+      email:
+        type: string
+        format: email
+        example: mati@sc.com
+      direccion:
+        type: string
+        example: la rioja 241
+      password:
+        type: string
+        example: pass12345
+      isActive:
+        type: string
+        example: true
+      prefixFile:
+        type: string
+        example: ordenes
   Movil:
     type: object
     required:
     - nombre
     - patente
+    - peso
     properties:
       nombre:
         type: string
         example: Mario Perez
       patente:
         type: string
-        format: uuid
         example: aqs123
-    example:
-      nombre: Mario Perez
-      patente: aqs123
-  Pedido:
-    type: object
-    required:
-    - cliente
-    - direccion
-    - dni
-    properties:
-      dni:
-        type: string
-        format: uuid
-        example: "111111111"
-      direccion:
-        type: string
-        example: Calle falsa 123
-      cliente:
-        type: string
-        example: Maria Gonzalez
-    example:
-      cliente: Maria Gonzalez
-      direccion: Calle falsa 123
-      dni: "111111111"
+      peso:
+        type: number
+        example: 100
