@@ -92,8 +92,13 @@ exports.saveFileInFTP = async (bodyFile) =>{
 };
 
 async function guardarOrdenNueva(ord,user) {
-    ord.estado = 'ON_WAY';
-    await orderService.createOrder(ord, user._id.toString());
+    if(ord._id){
+        ord.estado = 'NEW';
+        await orderService.updateOrder(ord.orden_id, ord);
+    }else{
+        await orderService.createOrder(ord, user._id.toString());
+    }
+
 }
 
 async function  guardarOrdenParaEntrega(ord,user) {
