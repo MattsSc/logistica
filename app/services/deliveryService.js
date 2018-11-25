@@ -22,14 +22,17 @@ exports.getDeliveredOrders = async () =>{
 exports.getFtpOrdersAndCreateDeliveryOrders = async (fileName) => {
     const user = await User.findOne({prefix_file: fileName});
     console.log('user ' + JSON.stringify(user));
+    let newOrders = [];
     try{
-        let newOrders = await this.getFileFromFTP(fileName);
-        console.log("file read");
-        return await this.createDeliveryOrders(newOrders, user);
+        if(fileName){
+            newOrders = await this.getFileFromFTP(fileName);
+            console.log("file read");
+        }
     }catch (e) {
-        throw new Error(e);
+        console.log("File has not been found");
     }
 
+    return await this.createDeliveryOrders(newOrders, user);
 };
 
 exports.createDeliveryOrders = async (ordenesNuevas, user) => {
@@ -37,6 +40,8 @@ exports.createDeliveryOrders = async (ordenesNuevas, user) => {
         const orderesOld = await orderService.getOrders('NEW');
 
         const moviles = await movilService.getMoviles();
+
+        moviles.sort((a,b) => { return a.peso >= b.peso ? -1 : 1});
 
         console.log("Se encontraron " + orderesOld.length + " recibidas anteriormente sin entregar");
 
