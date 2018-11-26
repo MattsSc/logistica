@@ -8,19 +8,15 @@ const ftpHost = "ftp.drivehq.com";
 const ftpUser= "sgesnouin";
 const ftpPassword="Martes38*t";
 
-const ftpHostDelivered1 = "navalparts.com.ar";
-const ftpUserDelivered1= "ia_almacen@navalparts.com.ar";
-const ftpPasswordDelivered1="ZuritaSpeed1";
-
 const ftpHostDelivered5 = "ftp.drivehq.com";
-const ftpUserDelivered5 = "almacen5";
-const ftpPasswordDelivered5 ="almacen5";
+const ftpUserDelivered5 = "sgesnouin";
+const ftpPasswordDelivered5 ="Martes38*t";
 
 
 exports.saveFile = async (body) => {
     const client = new ftp.Client();
     client.ftp.verbose = true;
-    const fileName = 'delivered-' + moment().format('YYYY-MM-DD')  + '.json';
+    const fileName = 'delivered-' + moment().tz('America/Argentina/Buenos_Aires').format('YYYY-MM-DD')  + '.json';
     try {
         await client.access({
             host: ftpHostDelivered5,
@@ -40,7 +36,7 @@ exports.saveFile = async (body) => {
 exports.getFile = async (prefix) => {
     const client = new ftp.Client();
     client.ftp.verbose = true;
-    const fileName = prefix + '-' + moment().format('DDMMYYYY')  + '.json';
+    const fileName = prefix + '-' + moment().tz('America/Argentina/Buenos_Aires').format('DDMMYYYY')  + '.json';
     console.log('getting file ' + fileName);
     try {
         await client.access({
