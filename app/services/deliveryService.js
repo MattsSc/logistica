@@ -108,8 +108,8 @@ async function guardarOrdenNueva(ord,user) {
 
 async function  guardarOrdenParaEntrega(ord,user) {
     console.log("se guarda orden " + JSON.stringify(ord));
+    ord.estado = 'ON_WAY';
     if(ord._id){
-        ord.estado = 'ON_WAY';
         await orderService.updateOrder(ord.orden_id, ord);
     }else{
         await guardarOrdenNueva(ord, user);
