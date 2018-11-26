@@ -1,7 +1,7 @@
 const ftp = require("basic-ftp");
 const fs = require("fs");
 const Readable = require('stream').Readable;
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 
 const ftpHost = "ftp.drivehq.com";
